@@ -108,19 +108,19 @@ export default function LandingPage() {
         <div className="text-center mb-10">
           <p className="text-sm md:text-base font-semibold text-zinc-500 uppercase tracking-widest">{t('landing.partners_title')}</p>
         </div>
-        <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-16 md:gap-24">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-12 sm:gap-16 md:gap-24 sm:justify-center items-center pb-6 -mx-6 px-6 sm:mx-0 sm:px-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           
-          <a href="https://www.facebook.com/omr.co2" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-4 group">
+          <a href="https://www.facebook.com/omr.co2" target="_blank" rel="noopener noreferrer" className="snap-center shrink-0 flex flex-col items-center gap-4 group w-[220px] sm:w-auto">
             <img src={omaraEsportsLogo} alt="Omara Esports" className="h-24 md:h-32 object-contain opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
             <span className="text-zinc-400 group-hover:text-white font-bold text-lg transition-colors">Omara E-Sports</span>
           </a>
 
-          <a href="https://www.instagram.com/xbomara" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-4 group">
+          <a href="https://www.instagram.com/xbomara" target="_blank" rel="noopener noreferrer" className="snap-center shrink-0 flex flex-col items-center gap-4 group w-[220px] sm:w-auto">
             <img src={omaraStudioLogo} alt="Omara Studio" className="h-24 md:h-32 object-contain opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
             <span className="text-zinc-400 group-hover:text-white font-bold text-lg transition-colors">Omara Studio</span>
           </a>
 
-          <a href="https://www.facebook.com/Dar.Eqraa" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-4 group">
+          <a href="https://www.facebook.com/Dar.Eqraa" target="_blank" rel="noopener noreferrer" className="snap-center shrink-0 flex flex-col items-center gap-4 group w-[220px] sm:w-auto">
             <img src={iqraaLogo} alt="Iqraa w tallem" className="h-24 md:h-32 object-contain opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
             <span className="text-zinc-400 group-hover:text-white font-bold text-lg transition-colors">إقرأ وتعلم</span>
           </a>
@@ -187,6 +187,27 @@ export default function LandingPage() {
             ))}
           </div>
         )}
+      {/* Location Section */}
+      <section className="py-16 px-6 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-8 items-center bg-zinc-950/40 border border-zinc-900 rounded-3xl p-4 md:p-8">
+          <div className="flex-1 w-full rounded-2xl overflow-hidden border border-zinc-800 h-[350px]">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3506.3249096007444!2d30.800828774951853!3d28.499870790093553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145b07000b222899%3A0xb40c0f20aee2fb5a!2sHAK%20SPACE!5e0!3m2!1sen!2seg!4v1784412306560!5m2!1sen!2seg" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen={true} 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+          <div className="md:w-1/3 flex flex-col justify-center text-center md:text-right" dir="rtl">
+            <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">مقر الأكاديمية</h3>
+            <p className="text-zinc-400 leading-relaxed font-medium">
+              المنيا / بنى مزار / الشارع المقابل لمدرسة الاعدادية بنات / بجانب استديو عزو
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
