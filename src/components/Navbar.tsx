@@ -13,14 +13,14 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 inset-x-0 h-20 bg-black/70 backdrop-blur-md border-b border-zinc-900 z-50">
+    <header className="fixed top-0 inset-x-0 h-24 md:h-28 bg-black/70 backdrop-blur-md border-b border-zinc-900 z-50">
       <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5">
           <img
             src={logoImg}
             alt="HakSpace Logo"
-            className="h-10 sm:h-14 w-auto object-contain rounded-lg"
+            className="h-16 sm:h-20 md:h-24 w-auto object-contain rounded-lg py-2"
           />
         </Link>
 
