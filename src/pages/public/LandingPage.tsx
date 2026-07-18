@@ -129,7 +129,7 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Courses Section */}
-      <section className="py-24 px-6 max-w-7xl mx-auto">
+      <section className="py-24 px-6 max-w-7xl mx-auto"> 
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">{t('landing.featured_title')}</h2>
@@ -187,6 +187,8 @@ export default function LandingPage() {
             ))}
           </div>
         )}
+      </section>
+
       {/* Location Section */}
       <section className="py-16 px-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-8 items-center bg-zinc-950/40 border border-zinc-900 rounded-3xl p-4 md:p-8">
