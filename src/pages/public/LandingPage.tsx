@@ -5,7 +5,10 @@ import { useAuthStore } from '../../store/authStore'
 import { ArrowRight, Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
-import logoImg from '../../assets/Logo.jpg'
+import logoImg from '../../assets/FinalLogo.png'
+import omaraEsportsLogo from '../../assets/omara-logo.png'
+import omaraStudioLogo from '../../assets/omara studio_00000.png'
+import iqraaLogo from '../../assets/iqraa_00000.png'
 
 interface Course {
   id: number
@@ -58,7 +61,7 @@ export default function LandingPage() {
               {t('landing.hero_title_2')}
             </span>
           </h1>
-          <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed whitespace-pre-line">
             {t('landing.hero_subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -82,11 +85,11 @@ export default function LandingPage() {
       <section className="py-12 border-y border-zinc-900 bg-zinc-950/20">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white">98%</h3>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">20%</h3>
             <p className="text-zinc-500 text-xs md:text-sm font-semibold uppercase tracking-wider mt-1">{t('landing.stats_employment')}</p>
           </div>
           <div>
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white">15k+</h3>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">1,490</h3>
             <p className="text-zinc-500 text-xs md:text-sm font-semibold uppercase tracking-wider mt-1">{t('landing.stats_graduates')}</p>
           </div>
           <div>
@@ -94,9 +97,21 @@ export default function LandingPage() {
             <p className="text-zinc-500 text-xs md:text-sm font-semibold uppercase tracking-wider mt-1">{t('landing.stats_satisfaction')}</p>
           </div>
           <div>
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white">50+</h3>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">+26</h3>
             <p className="text-zinc-500 text-xs md:text-sm font-semibold uppercase tracking-wider mt-1">{t('landing.stats_courses')}</p>
           </div>
+        </div>
+      </section>
+
+      {/* Partners Section */}
+      <section className="py-16 px-6 max-w-7xl mx-auto border-b border-zinc-900/50">
+        <div className="text-center mb-10">
+          <p className="text-sm md:text-base font-semibold text-zinc-500 uppercase tracking-widest">{t('landing.partners_title')}</p>
+        </div>
+        <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
+          <img src={omaraEsportsLogo} alt="Omara Esports" className="h-16 md:h-24 object-contain opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300" />
+          <img src={omaraStudioLogo} alt="Omara Studio" className="h-16 md:h-24 object-contain opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300" />
+          <img src={iqraaLogo} alt="Iqraa w tallem" className="h-16 md:h-24 object-contain opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300" />
         </div>
       </section>
 
@@ -149,7 +164,7 @@ export default function LandingPage() {
                   </div>
 
                   <div className="flex justify-between items-center pt-4 border-t border-zinc-800">
-                    <span className="text-lg font-black text-white">${course.price}</span>
+                    <span className="text-lg font-black text-white">{course.price} {t('common.currency')}</span>
                     <span className="text-xs text-zinc-400 flex items-center gap-1">
                       <Clock size={12} className="text-brand-500" /> {course.duration}
                     </span>
@@ -171,7 +186,6 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-6 text-zinc-500 text-xs">
             <Link to="/courses" className="hover:text-white transition">{t('nav.courses')}</Link>
-            <Link to="/login" className="hover:text-white transition">{t('nav.adminPanel')}</Link>
           </div>
         </div>
       </footer>

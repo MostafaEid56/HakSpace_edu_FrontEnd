@@ -6,12 +6,12 @@
     "logout": "Log Out"
   },
   "landing": {
-    "badge": "Welcome to the future of tech education",
-    "hero_title_1": "Master the Skills That",
-    "hero_title_2": "Define the Future",
-    "hero_subtitle": "Gain job-ready skills through immersive, cohort-based developer bootcamps. Mentorship, practical projects, and a global student network await you.",
+    "badge": "Welcome to our community",
+    "hero_title_1": "Join Our",
+    "hero_title_2": "Community",
+    "hero_subtitle": "HakSpace is not an academy, but a tech community that brings together creators, professionals, and those passionate about technology and design in an environment that supports learning and creativity.\nWe empower young experts to share their knowledge through professional courses and workshops, connecting them with trainees within a community built on collaboration and knowledge exchange.\nTogether, we build real connections and opportunities, aspiring to create the largest tech community that inspires youth and makes an impact in Egypt.",
     "explore_catalog": "Explore Course Catalog",
-    "stats_employment": "Employment Rate",
+    "stats_employment": "Post-Course Training",
     "stats_graduates": "Graduates & Alumni",
     "stats_courses": "Training Courses",
     "stats_satisfaction": "Student Satisfaction",
@@ -34,7 +34,8 @@
     "footer_rights": "All rights reserved.",
     "per_week": "per week",
     "students": "students",
-    "duration": "Duration"
+    "duration": "Duration",
+    "partners_title": "Our Partners"
   },
   "courses": {
     "title": "Training Courses",
@@ -63,13 +64,12 @@
     "seats": "Seats",
     "remaining": "remaining",
     "schedule": "Schedule",
-    "benefits_title": "What You Will Get",
-    "benefit_1": "Professional certificate of completion",
-    "benefit_2": "1-on-1 mentorship sessions",
-    "benefit_3": "Lifetime access to online community",
-    "benefit_4": "Real-world portfolio projects",
-    "benefit_5": "Resume & LinkedIn profile optimization",
-    "benefit_6": "Direct job referral network",
+    "benefits_title": "What you will get after completion",
+    "benefit_1": "Verified completion certificate from our platform",
+    "benefit_2": "Lifetime access to our community",
+    "benefit_3": "Special perks for our community members",
+    "benefit_4": "Professional portfolio preparation",
+    "benefit_5": "Strong network for training and experience exchange",
     "sidebar_fees": "Tuition Fees",
     "sidebar_one_time": "One-time payment",
     "sidebar_selected_group": "selected",
@@ -167,7 +167,7 @@
     "field_instructor_placeholder": "e.g. Dr. Adam Smith",
     "field_duration": "Duration *",
     "field_duration_placeholder": "e.g. 12 Weeks",
-    "field_price": "Tuition Fees ($) *",
+    "field_price": "Tuition Fees (EGP) *",
     "field_image": "Image URL",
     "field_image_placeholder": "https://unsplash...",
     "field_rating": "Initial Rating",
@@ -252,7 +252,8 @@
     "na": "N/A",
     "full": "Full",
     "available": "Available",
-    "lang_switch": "العربية"
+    "lang_switch": "العربية",
+    "currency": "EGP"
   },
   "certificate": {
     "verify_nav": "Verify Certificate",

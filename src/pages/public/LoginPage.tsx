@@ -5,7 +5,7 @@ import { useAuthStore } from '../../store/authStore'
 import { toast } from 'react-toastify'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
-import logoImg from '../../assets/Logo.jpg'
+import logoImg from '../../assets/FinalLogo.png'
 
 export default function LoginPage() {
   const navigate = useNavigate()

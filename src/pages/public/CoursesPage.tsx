@@ -132,7 +132,7 @@ export default function CoursesPage() {
                   <div className="flex justify-between items-center pt-4 border-t border-zinc-800/80">
                     <div className="flex flex-col">
                       <span className="text-zinc-500 text-xs uppercase tracking-wider font-semibold">{t('courses.price')}</span>
-                      <span className="text-2xl font-bold">${course.price}</span>
+                      <span className="text-2xl font-bold">{course.price} {t('common.currency')}</span>
                     </div>
                     <button className="px-5 py-2.5 bg-zinc-800 group-hover:bg-brand-600 group-hover:text-white rounded-xl text-sm font-semibold transition-colors duration-300">
                       {t('courses.view_details')}

@@ -52,7 +52,7 @@ export default function DashboardPage() {
                 <DollarSign size={24} />
               </div>
               <p className="text-zinc-400 text-sm font-semibold uppercase tracking-wider">{t('dashboard.total_revenue')}</p>
-              <h2 className="text-3xl font-black mt-2 text-white">${stats.totalRevenue.toLocaleString()}</h2>
+              <h2 className="text-3xl font-black mt-2 text-white">{stats.totalRevenue.toLocaleString()} {t('common.currency')}</h2>
               <div className="mt-4 flex items-center gap-1.5 text-xs text-emerald-500 font-semibold">
                 <TrendingUp size={14} /> {t('dashboard.revenue_growth')}
               </div>

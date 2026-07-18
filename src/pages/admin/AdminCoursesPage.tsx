@@ -292,7 +292,7 @@ export default function AdminCoursesPage() {
 
                     {/* Price & Rating */}
                     <td className="py-4 px-6">
-                      <p className="font-bold text-white text-base">${course.price.toLocaleString()}</p>
+                      <p className="font-bold text-white text-base">{course.price.toLocaleString()} {t('common.currency')}</p>
                       <span className="flex items-center gap-1 text-[10px] text-zinc-400 mt-0.5">
                         <Star size={10} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)}
                       </span>

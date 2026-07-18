@@ -303,7 +303,6 @@ export default function CourseDetailsPage() {
                   t('course_details.benefit_3'),
                   t('course_details.benefit_4'),
                   t('course_details.benefit_5'),
-                  t('course_details.benefit_6'),
                 ].map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
                     <span className="w-5 h-5 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -349,7 +348,7 @@ export default function CourseDetailsPage() {
               <div className="mb-6 border-b border-zinc-800 pb-4">
                 <span className="text-zinc-400 text-sm font-semibold uppercase tracking-wider">{t('course_details.sidebar_fees')}</span>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-4xl font-extrabold">${course.price}</span>
+                  <span className="text-4xl font-extrabold">{course.price} {t('common.currency')}</span>
                   <span className="text-zinc-500 text-xs">{t('course_details.sidebar_one_time')}</span>
                 </div>
               </div>

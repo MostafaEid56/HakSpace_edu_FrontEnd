@@ -2,7 +2,7 @@ import { Navigate, useLocation, Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { LayoutDashboard, Users, LogOut, BookOpen, ShieldOff } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import logoImg from '../assets/Logo.jpg'
+import logoImg from '../assets/FinalLogo.png'
 import LanguageSwitcher from './LanguageSwitcher'
 
 interface AdminLayoutProps {
