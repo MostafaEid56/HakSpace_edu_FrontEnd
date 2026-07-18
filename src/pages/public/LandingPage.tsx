@@ -216,7 +216,7 @@ export default function LandingPage() {
       <footer className="border-t border-zinc-900 bg-zinc-950/20 py-12 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={logoImg} alt="HakSpace" className="h-8 w-auto object-contain rounded-md" />
+            <img src={logoImg} alt="HakSpace" className="h-16 sm:h-20 w-auto object-contain rounded-md" />
             <span className="text-zinc-600 text-xs">© 2026 HakSpace. {t('landing.footer_rights')}</span>
           </div>
 
