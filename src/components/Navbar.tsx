@@ -20,7 +20,7 @@ export default function Navbar() {
           <img
             src={logoImg}
             alt="HakSpace Logo"
-            className="h-8 sm:h-10 w-auto object-contain rounded-lg"
+            className="h-10 sm:h-14 w-auto object-contain rounded-lg"
           />
         </Link>
 
@@ -53,7 +53,7 @@ export default function Navbar() {
             {t('certificate.verify_nav')}
           </Link>
 
-          {user ? (
+          {user && (
             <>
               {user.role === 'ADMIN' && (
                 <Link
@@ -70,13 +70,6 @@ export default function Navbar() {
                 {t('nav.logout')}
               </button>
             </>
-          ) : (
-            <Link
-              to="/login"
-              className="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold transition shadow-lg shadow-brand-900/20"
-            >
-              {t('nav.login')}
-            </Link>
           )}
         </nav>
       </div>
@@ -100,7 +93,7 @@ export default function Navbar() {
             {t('certificate.verify_nav')}
           </Link>
 
-          {user ? (
+          {user && (
             <>
               {user.role === 'ADMIN' && (
                 <Link
@@ -118,14 +111,6 @@ export default function Navbar() {
                 {t('nav.logout')}
               </button>
             </>
-          ) : (
-            <Link
-              to="/login"
-              onClick={() => setIsMenuOpen(false)}
-              className="w-full text-center px-5 py-3 mt-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-base font-semibold transition shadow-lg shadow-brand-900/20"
-            >
-              {t('nav.login')}
-            </Link>
           )}
         </div>
       )}

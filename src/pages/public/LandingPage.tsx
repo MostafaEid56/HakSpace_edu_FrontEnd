@@ -108,10 +108,23 @@ export default function LandingPage() {
         <div className="text-center mb-10">
           <p className="text-sm md:text-base font-semibold text-zinc-500 uppercase tracking-widest">{t('landing.partners_title')}</p>
         </div>
-        <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
-          <img src={omaraEsportsLogo} alt="Omara Esports" className="h-16 md:h-24 object-contain opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300" />
-          <img src={omaraStudioLogo} alt="Omara Studio" className="h-16 md:h-24 object-contain opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300" />
-          <img src={iqraaLogo} alt="Iqraa w tallem" className="h-16 md:h-24 object-contain opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300" />
+        <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-16 md:gap-24">
+          
+          <a href="https://www.facebook.com/omr.co2" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-4 group">
+            <img src={omaraEsportsLogo} alt="Omara Esports" className="h-24 md:h-32 object-contain opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+            <span className="text-zinc-400 group-hover:text-white font-bold text-lg transition-colors">Omara E-Sports</span>
+          </a>
+
+          <a href="https://www.instagram.com/xbomara" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-4 group">
+            <img src={omaraStudioLogo} alt="Omara Studio" className="h-24 md:h-32 object-contain opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+            <span className="text-zinc-400 group-hover:text-white font-bold text-lg transition-colors">Omara Studio</span>
+          </a>
+
+          <a href="https://www.facebook.com/Dar.Eqraa" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-4 group">
+            <img src={iqraaLogo} alt="Iqraa w tallem" className="h-24 md:h-32 object-contain opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+            <span className="text-zinc-400 group-hover:text-white font-bold text-lg transition-colors">إقرأ وتعلم</span>
+          </a>
+
         </div>
       </section>
 
