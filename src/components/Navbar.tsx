@@ -3,7 +3,7 @@ import { ArrowUpRight, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from 'react-i18next'
-import logoImg from '../assets/FinalLogo.png'
+import logoImg from '../assets/hak_00000.png'
 import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navbar() {
