@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+let API_URL = import.meta.env.VITE_API_URL || 'https://hakspace-edu-backend.onrender.com'
 
 // Normalize URL to prevent double /api/api pathing
 if (API_URL.endsWith('/')) {
