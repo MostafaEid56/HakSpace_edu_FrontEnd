@@ -5,6 +5,7 @@ import { useAuthStore } from '../../store/authStore'
 import { ArrowRight, Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
+import { formatDuration } from '../../utils/duration'
 import logoImg from '../../assets/hak_00000.png'
 import omaraEsportsLogo from '../../assets/omara-logo.png'
 import omaraStudioLogo from '../../assets/omara studio_00000.png'
@@ -179,7 +180,7 @@ export default function LandingPage() {
                   <div className="flex justify-between items-center pt-4 border-t border-zinc-800">
                     <span className="text-lg font-black text-white">{course.price} {t('common.currency')}</span>
                     <span className="text-xs text-zinc-400 flex items-center gap-1">
-                      <Clock size={12} className="text-brand-500" /> {course.duration}
+                      <Clock size={12} className="text-brand-500" /> {formatDuration(course.duration, i18n.language)}
                     </span>
                   </div>
                 </div>

@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import AdminCourseStudentsSection from '../../components/AdminCourseStudentsSection'
+import { formatDuration } from '../../utils/duration'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -244,7 +245,7 @@ export default function CourseDetailsPage() {
                 <User size={14} className="text-brand-500" /> {t('course_details.instructor_label')}: <strong className="text-white ml-1">{course.instructorName}</strong>
               </span>
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 rounded-full">
-                <Clock size={14} className="text-brand-500" /> {course.duration}
+                <Clock size={14} className="text-brand-500" /> {formatDuration(course.duration, i18n.language)}
               </span>
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 rounded-full">
                 <Star size={14} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)} / 5.0
@@ -335,7 +336,7 @@ export default function CourseDetailsPage() {
 
             {/* Enrolled Students (Admin only) */}
             {user?.role === 'ADMIN' && (
-              <AdminCourseStudentsSection courseId={Number(id)} />
+              <AdminCourseStudentsSection courseId={Number(id)} groups={course.groups ?? []} />
             )}
           </div>
 

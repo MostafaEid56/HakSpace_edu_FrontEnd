@@ -1,9 +1,16 @@
-import React from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../api/client'
 import { toast } from 'react-toastify'
-import { Award, CheckCircle2, CircleDashed, ExternalLink, Copy, Trash2 } from 'lucide-react'
+import { Award, CheckCircle2, CircleDashed, ExternalLink, Copy, Trash2, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+
+interface CourseGroup {
+  id: number
+  groupName: string
+  isAvailable: boolean
+  schedule: string
+}
 
 interface StudentCourse {
   id: number
@@ -20,14 +27,30 @@ interface StudentCourse {
   certificateId: string | null
 }
 
-export default function AdminCourseStudentsSection({ courseId }: { courseId: number }) {
+interface Props {
+  courseId: number
+  groups?: CourseGroup[]
+}
+
+export default function AdminCourseStudentsSection({ courseId, groups = [] }: Props) {
   const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
 
+  // null = all groups, number = filtered by that groupId
+  const [activeGroupId, setActiveGroupId] = useState<number | null>(null)
+
+  const activeGroups    = groups.filter(g => g.isAvailable)
+  const completedGroups = groups.filter(g => !g.isAvailable)
+
+  const handleGroupFilter = (id: number | null) => setActiveGroupId(id)
+
   const { data: students, isLoading } = useQuery<StudentCourse[]>({
-    queryKey: ['enrolledStudents', courseId],
+    queryKey: ['enrolledStudents', courseId, activeGroupId],
     queryFn: async () => {
-      const res = await apiClient.get(`/api/admin/courses/${courseId}/students`)
+      const url = activeGroupId != null
+        ? `/api/admin/courses/${courseId}/students?groupId=${activeGroupId}`
+        : `/api/admin/courses/${courseId}/students`
+      const res = await apiClient.get(url)
       return res.data
     }
   })
@@ -76,6 +99,63 @@ export default function AdminCourseStudentsSection({ courseId }: { courseId: num
         {t('certificate.enrolled_students')}
       </h2>
 
+      {/* ── Group Filter Controls ─────────────────────────────────── */}
+      {groups.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3">
+
+          {/* All-groups button */}
+          <button
+            onClick={() => handleGroupFilter(null)}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition border ${
+              activeGroupId === null
+                ? 'bg-brand-600 text-white border-brand-500 shadow-md shadow-brand-900/30'
+                : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+            }`}
+          >
+            {t('certificate.filter_all_groups')}
+          </button>
+
+          {/* Active group buttons */}
+          {activeGroups.map(g => (
+            <button
+              key={g.id}
+              onClick={() => handleGroupFilter(g.id)}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition border ${
+                activeGroupId === g.id
+                  ? 'bg-brand-600 text-white border-brand-500 shadow-md shadow-brand-900/30'
+                  : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+              }`}
+            >
+              {g.groupName}
+            </button>
+          ))}
+
+          {/* Completed groups dropdown */}
+          {completedGroups.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <Users size={13} className="text-zinc-500" />
+              <select
+                value={completedGroups.some(g => g.id === activeGroupId) ? String(activeGroupId) : ''}
+                onChange={e => handleGroupFilter(e.target.value === '' ? null : Number(e.target.value))}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition focus:outline-none focus:ring-1 focus:ring-brand-500 ${
+                  completedGroups.some(g => g.id === activeGroupId)
+                    ? 'bg-zinc-700 text-white border-zinc-600'
+                    : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700'
+                }`}
+              >
+                <option value="">{t('certificate.filter_completed_groups')}</option>
+                {completedGroups.map(g => (
+                  <option key={g.id} value={g.id} className="bg-zinc-950">
+                    {g.groupName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Table ──────────────────────────────────────────────────── */}
       {!students || students.length === 0 ? (
         <div className="bg-zinc-900/50 border border-zinc-850 rounded-xl p-8 text-center text-zinc-500 text-sm">
           {t('certificate.no_students')}

@@ -54,7 +54,8 @@
     "price": "Price",
     "groups": "Groups",
     "available": "Available",
-    "full": "Full"
+    "full": "Full",
+    "remaining_seats": "Seats Left"
   },
   "course_details": {
     "back": "Back to Catalog",
@@ -166,7 +167,7 @@
     "field_instructor": "Instructor Name *",
     "field_instructor_placeholder": "e.g. Dr. Adam Smith",
     "field_duration": "Duration *",
-    "field_duration_placeholder": "e.g. 12 Weeks",
+    "field_duration_placeholder": "e.g. 3 Months",
     "field_price": "Tuition Fees (EGP) *",
     "field_image": "Image URL",
     "field_image_placeholder": "https://unsplash...",
@@ -283,6 +284,8 @@
     "enrollment_date": "Enrollment Date",
     "completion_status": "Completion Status",
     "no_students": "No students currently enrolled in this course.",
+    "filter_all_groups": "All Groups",
+    "filter_completed_groups": "Completed Groups",
     "remove_student": "Remove Student",
     "confirm_remove": "Are you sure you want to remove this student from the course? This will also delete any generated certificates for this enrollment.",
     "remove_success": "Student removed from course successfully.",

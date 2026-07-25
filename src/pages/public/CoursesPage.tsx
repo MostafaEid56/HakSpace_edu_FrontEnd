@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { apiClient } from '../../api/client'
-import { Star, Clock, Users, ArrowRight } from 'lucide-react'
+import { Star, Clock, Users, ArrowRight, Armchair } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
+import { formatDuration } from '../../utils/duration'
 
 interface Course {
   id: number
@@ -15,6 +16,7 @@ interface Course {
   price: number
   rating: number
   studentCount: number
+  remainingSeats: number
   groups: { id: number; groupName: string; isAvailable: boolean }[]
 }
 
@@ -105,7 +107,7 @@ export default function CoursesPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
                     <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-zinc-300 flex items-center gap-1">
-                      <Clock size={12} className="text-brand-500" /> {course.duration}
+                      <Clock size={12} className="text-brand-500" /> {formatDuration(course.duration, i18n.language)}
                     </span>
                     <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-zinc-300 flex items-center gap-1">
                       <Star size={12} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)}
@@ -121,11 +123,23 @@ export default function CoursesPage() {
                     <p className="text-zinc-400 text-sm mb-4 line-clamp-2">
                       {course.description}
                     </p>
-                    <div className="flex items-center gap-2 mb-6">
+                    <div className="flex items-center gap-2 mb-3">
                       <div className="w-6 h-6 rounded-full bg-brand-500/20 text-brand-500 flex items-center justify-center font-bold text-xs">
                         {course.instructorName.charAt(0)}
                       </div>
                       <span className="text-xs text-zinc-400">{course.instructorName}</span>
+                    </div>
+                    <div className="mb-4">
+                      {course.remainingSeats > 0 ? (
+                        <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                          <Armchair size={11} />
+                          {course.remainingSeats} {t('courses.remaining_seats')}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                          {t('courses.full')}
+                        </span>
+                      )}
                     </div>
                   </div>
 

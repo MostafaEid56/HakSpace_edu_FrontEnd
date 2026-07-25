@@ -54,7 +54,8 @@
     "price": "السعر",
     "groups": "المجموعات",
     "available": "متاح",
-    "full": "مكتمل"
+    "full": "مكتمل",
+    "remaining_seats": "مقاعد متبقية"
   },
   "course_details": {
     "back": "العودة إلى الكتالوج",
@@ -166,7 +167,7 @@
     "field_instructor": "اسم المدرب *",
     "field_instructor_placeholder": "مثال: د. محمد أحمد",
     "field_duration": "المدة *",
-    "field_duration_placeholder": "مثال: 12 أسبوعاً",
+    "field_duration_placeholder": "مثال: 3 أشهر",
     "field_price": "الرسوم الدراسية (ج.م) *",
     "field_image": "رابط الصورة",
     "field_image_placeholder": "https://...",
@@ -283,6 +284,8 @@
     "enrollment_date": "تاريخ التسجيل",
     "completion_status": "حالة الإتمام",
     "no_students": "لا يوجد طلاب مسجلون في هذه الدورة حالياً.",
+    "filter_all_groups": "جميع المجموعات",
+    "filter_completed_groups": "المجموعات المنتهية",
     "remove_student": "إزالة الطالب",
     "confirm_remove": "هل أنت متأكد من إزالة هذا الطالب من الدورة؟ سيؤدي ذلك أيضاً إلى حذف أي شهادات تم إصدارها لهذا التسجيل.",
     "remove_success": "تم إزالة الطالب من الدورة بنجاح.",

@@ -8,6 +8,7 @@ import {
   Star, GraduationCap, Users, Calendar, ChevronDown, ChevronUp, Eye
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatDuration } from '../../utils/duration'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -56,7 +57,7 @@ const fetchCourses = async (): Promise<Course[]> => {
 export default function AdminCoursesPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   // Modal state
   const [isOpen, setIsOpen] = useState(false)
@@ -140,7 +141,7 @@ export default function AdminCoursesPage() {
       setDescription('')
       setImageUrl('https://images.unsplash.com/photo-1517694712202-14dd9538aa97')
       setCourseMaterialsLink('')
-      setDuration('12 Weeks')
+      setDuration('3 Months')
       setInstructorName('')
       setPrice(199)
       setRating(4.8)
@@ -277,7 +278,7 @@ export default function AdminCoursesPage() {
                         <div className="min-w-0">
                           <p className="font-bold text-white truncate text-base">{course.title}</p>
                           <span className="flex items-center gap-1 text-[10px] text-zinc-400 mt-0.5">
-                            <Clock size={10} className="text-brand-500" /> {course.duration}
+                            <Clock size={10} className="text-brand-500" /> {formatDuration(course.duration, i18n.language)}
                           </span>
                         </div>
                       </div>
