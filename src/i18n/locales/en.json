@@ -286,7 +286,7 @@
     "remove_student": "Remove Student",
     "confirm_remove": "Are you sure you want to remove this student from the course? This will also delete any generated certificates for this enrollment.",
     "remove_success": "Student removed from course successfully.",
-    "remove_error": "Failed to remove student."
+    "remove_error": "Failed to remove student.",
     "blocked_title": "Certificate Blocked",
     "blocked_message": "This certificate has been blocked by the administration.",
     "blocked_reason": "Reason"
