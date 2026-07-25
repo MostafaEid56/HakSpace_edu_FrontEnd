@@ -2,7 +2,7 @@ import React from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../api/client'
 import { toast } from 'react-toastify'
-import { Award, CheckCircle2, CircleDashed, ExternalLink, Copy } from 'lucide-react'
+import { Award, CheckCircle2, CircleDashed, ExternalLink, Copy, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 interface StudentCourse {
@@ -43,6 +43,21 @@ export default function AdminCourseStudentsSection({ courseId }: { courseId: num
     },
     onError: () => {
       toast.error(t('leads.update_error'))
+    }
+  })
+
+  const removeStudentMutation = useMutation({
+    mutationFn: async (studentId: number) => {
+      const res = await apiClient.delete(`/api/admin/courses/${courseId}/students/${studentId}`)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['enrolledStudents', courseId] })
+      toast.success(t('certificate.remove_success'))
+    },
+    onError: (err: any) => {
+      const errMsg = err?.response?.data?.message || t('certificate.remove_error')
+      toast.error(errMsg)
     }
   })
 
@@ -147,6 +162,18 @@ export default function AdminCourseStudentsSection({ courseId }: { courseId: num
                           {t('certificate.mark_in_progress')}
                         </button>
                       )}
+                      <button
+                        onClick={() => {
+                          if (window.confirm(t('certificate.confirm_remove'))) {
+                            removeStudentMutation.mutate(student.studentId)
+                          }
+                        }}
+                        disabled={removeStudentMutation.isPending}
+                        className="px-2.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg transition flex items-center border border-red-500/20 disabled:opacity-50"
+                        title={t('certificate.remove_student')}
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   </td>
                 </tr>

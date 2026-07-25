@@ -4,6 +4,7 @@ import { apiClient } from '../../api/client'
 import { useAuthStore } from '../../store/authStore'
 import { toast } from 'react-toastify'
 import { useTranslation } from 'react-i18next'
+import { Eye, EyeOff } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import logoImg from '../../assets/FinalLogo.png'
 
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,14 +75,24 @@ export default function LoginPage() {
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">{t('login.password_label')}</label>
-            <input 
-              type="password" 
-              className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition" 
-              placeholder={t('login.password_placeholder')}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition pr-12" 
+                placeholder={t('login.password_placeholder')}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           <button 
             type="submit" 

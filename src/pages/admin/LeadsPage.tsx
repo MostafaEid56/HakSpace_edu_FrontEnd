@@ -31,11 +31,6 @@ interface Enrollment {
   createdAt: string
 }
 
-const fetchLeads = async (): Promise<Enrollment[]> => {
-  const response = await apiClient.get('/api/admin/leads')
-  return response.data
-}
-
 const updateLeadStatus = async ({ id, status }: { id: number; status: string }) => {
   const response = await apiClient.put(`/api/admin/leads/${id}/status`, { status })
   return response.data
@@ -45,10 +40,25 @@ export default function LeadsPage() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<'ALL' | 'NEW' | 'CONTACTED' | 'ENROLLED' | 'CLOSED'>('ALL')
+  const [selectedCourseId, setSelectedCourseId] = useState<string>('ALL')
 
   const { data: leads, isLoading, error } = useQuery<Enrollment[]>({
-    queryKey: ['leads'],
-    queryFn: fetchLeads,
+    queryKey: ['leads', selectedCourseId],
+    queryFn: async () => {
+      const url = selectedCourseId === 'ALL'
+        ? '/api/admin/leads'
+        : `/api/admin/leads?courseId=${selectedCourseId}`
+      const response = await apiClient.get(url)
+      return response.data
+    },
+  })
+
+  const { data: courses } = useQuery<Course[]>({
+    queryKey: ['adminCourses'],
+    queryFn: async () => {
+      const res = await apiClient.get('/api/admin/courses')
+      return res.data
+    }
   })
 
   const mutation = useMutation({
@@ -103,21 +113,39 @@ export default function LeadsPage() {
           <p className="text-zinc-500 text-sm mt-1">{t('leads.subtitle')}</p>
         </div>
         
-        {/* Tab Filters */}
-        <div className="flex bg-zinc-900 border border-zinc-850 p-1 rounded-xl flex-wrap gap-1">
-          {(['ALL', 'NEW', 'CONTACTED', 'ENROLLED', 'CLOSED'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition ${
-                activeTab === tab
-                  ? 'bg-zinc-850 text-white border border-zinc-805/50'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              {tabLabels[tab]}
-            </button>
-          ))}
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+          {/* Course Filter Dropdown */}
+          <select
+            value={selectedCourseId}
+            onChange={(e) => setSelectedCourseId(e.target.value)}
+            className="px-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-xs font-bold text-zinc-350 focus:outline-none focus:ring-1 focus:ring-brand-500 min-w-[200px] cursor-pointer"
+          >
+            <option value="ALL" className="bg-zinc-950 text-zinc-300">
+              {t('leads.filter_all_courses')}
+            </option>
+            {courses?.map((course) => (
+              <option key={course.id} value={course.id.toString()} className="bg-zinc-950 text-zinc-300">
+                {course.title}
+              </option>
+            ))}
+          </select>
+
+          {/* Tab Filters */}
+          <div className="flex bg-zinc-900 border border-zinc-850 p-1 rounded-xl flex-wrap gap-1">
+            {(['ALL', 'NEW', 'CONTACTED', 'ENROLLED', 'CLOSED'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition ${
+                  activeTab === tab
+                    ? 'bg-zinc-850 text-white border border-zinc-805/50'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                {tabLabels[tab]}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
