@@ -1,6 +1,14 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
+# Accept build arguments for environment variables
+ARG VITE_API_URL
+ARG VITE_WHATSAPP_NUMBER
+
+# Expose them as environment variables during build
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_WHATSAPP_NUMBER=$VITE_WHATSAPP_NUMBER
+
 # Copy only package.json — intentionally NOT copying package-lock.json
 # so npm does a fresh install that always includes devDependencies
 COPY package.json ./
