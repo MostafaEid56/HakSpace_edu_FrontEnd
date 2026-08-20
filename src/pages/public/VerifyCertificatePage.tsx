@@ -5,11 +5,15 @@ import { toast } from 'react-toastify'
 import { Award, CheckCircle, Search, ArrowLeft, Printer, ShieldCheck, ShieldAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
+import logoImg from '../../assets/Logo.jpg'
 
 interface Certificate {
   certificateId: string
   studentName: string
   courseName: string
+  instructorName?: string
+  courseDuration?: string
+  startDate?: string
   issueDate: string
 }
 
@@ -72,13 +76,13 @@ export default function VerifyCertificatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col print:bg-white print:text-black">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Hide Navbar when printing */}
       <div className="print:hidden">
         <Navbar />
       </div>
 
-      <div className="max-w-4xl mx-auto w-full px-4 pt-28 pb-16 flex-grow flex flex-col justify-start print:pt-0 print:pb-0">
+      <div className="max-w-[1280px] mx-auto w-full px-4 pt-28 pb-16 flex-grow flex flex-col justify-start print:pt-0 print:pb-0">
         
         {/* Back Button */}
         <button
@@ -177,98 +181,138 @@ export default function VerifyCertificatePage() {
               </button>
             </div>
 
-            {/* Certificate Premium Card */}
-            <div className="bg-stone-50 border-[12px] border-amber-800 rounded-2xl p-8 md:p-16 shadow-2xl text-stone-900 font-serif relative overflow-hidden min-h-[500px] flex flex-col justify-between print:border-[8px] print:shadow-none print:bg-white print:my-0">
-              
-              {/* Filigree corner styling */}
-              <div className="absolute top-2 left-2 w-16 h-16 border-t-2 border-l-2 border-amber-800/40" />
-              <div className="absolute top-2 right-2 w-16 h-16 border-t-2 border-r-2 border-amber-800/40" />
-              <div className="absolute bottom-2 left-2 w-16 h-16 border-b-2 border-l-2 border-amber-800/40" />
-              <div className="absolute bottom-2 right-2 w-16 h-16 border-b-2 border-r-2 border-amber-800/40" />
+            {/* Exact New Certificate Design Stage */}
+            <div className="w-full overflow-x-auto pb-4 flex justify-center print:overflow-visible">
+              <div
+                className="certificate relative w-[1200px] min-w-[1200px] h-[675px] bg-gradient-to-br from-[#161616] via-[#0c0c0c] to-[#050505] text-white overflow-hidden shadow-2xl print:m-0 print:shadow-none"
+                style={{
+                  fontFamily: "'Arial', 'Helvetica Neue', sans-serif",
+                  lineHeight: 'normal'
+                }}
+              >
+                {/* Diagonal Side Panel */}
+                <div
+                  className="side-panel absolute top-0 left-0 w-[305px] h-full bg-gradient-to-br from-[#222] via-[#141414] to-[#0a0a0a] z-10"
+                  style={{ clipPath: 'polygon(0 0, 100% 0, 78% 100%, 0% 100%)' }}
+                />
 
-              {/* Watermark Logo */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
-                <Award size={400} className="text-stone-900" />
-              </div>
+                {/* Watermark */}
+                <div
+                  className="watermark absolute top-1/2 left-[148px] w-[850px] text-center font-black text-[150px] tracking-[2px] text-white/5 whitespace-nowrap z-10 pointer-events-none select-none"
+                  style={{ transform: 'translate(-50%, -50%) rotate(90deg)', transformOrigin: 'center center', fontFamily: "'Arial Black', Arial, sans-serif" }}
+                >
+                  HAKSPACE
+                </div>
 
-              {/* Top part: Brand & Verified Badge */}
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-zinc-900 text-brand-500 rounded-xl flex items-center justify-center font-sans font-black text-xl shadow">
-                    HS
+                {/* Logo Box */}
+                <div className="logo-box absolute top-[38px] left-[38px] w-[230px] h-[190px] z-30 flex flex-col items-center justify-center p-2">
+                  <img src={logoImg} alt="HakSpace" className="w-auto h-36 object-contain rounded-xl" />
+                </div>
+
+                {/* Certificate ID Box */}
+                <div className="cert-id-box absolute top-[34px] right-[36px] px-[18px] py-[12px] z-30 text-left">
+                  <div className="row1 text-[14px] font-bold mb-[6px] text-white whitespace-nowrap">
+                    Certificate ID : <span className="value font-normal" id="certificateId">{certificate.certificateId}</span>
                   </div>
-                  <div>
-                    <h4 className="font-sans font-black text-sm tracking-widest uppercase text-stone-800">HAKSPACE</h4>
-                    <p className="font-sans text-[10px] text-stone-500 tracking-wider">ACADEMY & TECHNOLOGY</p>
+                  <div className="row2 text-[11px] font-bold text-white whitespace-nowrap">
+                    Verify Online : <a href="http://haksc.com/verify-certificate" id="verifyLink" className="font-normal text-white underline hover:text-zinc-300">http://haksc.com/verify-certificate</a>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-green-100 text-green-800 border border-green-200 px-3 py-1 rounded-full text-xs font-sans font-bold shadow-sm print:bg-transparent print:border-green-800 print:text-green-800">
-                  <ShieldCheck size={14} />
-                  <span>{t('certificate.verified_badge')}</span>
+                {/* Title */}
+                <div className="title-block absolute top-[100px] left-[335px] z-30 text-left">
+                  <div className="line1 text-[66px] font-black text-[#e12525] tracking-[1px] leading-none">Certificate</div>
+                  <div className="line2 text-[50px] font-black text-white tracking-[1px] leading-[1.15]">Of Completion</div>
                 </div>
-              </div>
 
-              {/* Middle: Certificate Content */}
-              <div className="text-center my-8 space-y-6">
-                <h2 className="text-3xl md:text-5xl font-bold text-amber-900 tracking-wide uppercase font-sans">
-                  {t('certificate.cert_title')}
-                </h2>
-                
-                <p className="text-stone-500 italic text-sm md:text-base">
-                  {t('certificate.cert_presented')}
-                </p>
+                {/* Given To */}
+                <div className="given-to absolute top-[275px] left-[335px] text-[26px] font-normal text-[#eaeaea] z-30">
+                  This Certificate Is Given To
+                </div>
 
-                <h3 className="text-2xl md:text-4xl font-extrabold text-stone-850 border-b-2 border-stone-300 pb-2 max-w-md mx-auto font-sans">
+                {/* Student Name */}
+                <div className="student-name absolute top-[325px] left-[335px] right-[60px] text-[52px] font-bold text-white z-30 border-b-2 border-white/15 pb-[14px] min-h-[70px] text-left">
                   {certificate.studentName}
-                </h3>
-
-                <p className="text-stone-500 italic text-sm md:text-base">
-                  {t('certificate.cert_body')}
-                </p>
-
-                <h4 className="text-xl md:text-2xl font-bold text-stone-900 font-sans">
-                  {certificate.courseName}
-                </h4>
-              </div>
-
-              {/* Bottom: Signatures and Metadata */}
-              <div className="border-t border-stone-200 pt-8 mt-4 grid grid-cols-2 md:grid-cols-3 gap-6 items-end text-sm text-stone-600 font-sans">
-                <div>
-                  <span className="text-stone-400 block text-xs uppercase tracking-wider">{t('certificate.cert_id')}</span>
-                  <strong className="text-stone-800 font-mono text-sm">{certificate.certificateId}</strong>
                 </div>
 
-                <div className="text-center hidden md:block">
-                  <div className="w-20 h-20 mx-auto bg-green-50/50 rounded-full flex items-center justify-center border border-green-100/50 text-green-700 opacity-60">
-                    <CheckCircle size={36} />
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <span className="text-stone-400 block text-xs uppercase tracking-wider">{t('certificate.issue_date')}</span>
-                  <strong className="text-stone-800">
-                    {new Date(certificate.issueDate).toLocaleDateString(
-                      i18n.language === 'ar' ? 'ar-EG' : 'en-US',
-                      { year: 'numeric', month: 'long', day: 'numeric' }
-                    )}
-                  </strong>
-                </div>
-
-                <div className="col-span-2 md:col-span-3 border-t border-stone-150 pt-4 flex justify-between items-center text-xs">
+                {/* Course Name & Duration */}
+                <div className="course-line absolute top-[415px] left-[335px] right-[60px] text-[19px] text-[#cfcfcf] z-30 leading-[1.5] text-left">
                   <div>
-                    <span className="text-stone-400 block mb-1">{t('certificate.academy_signature')}</span>
-                    <span className="font-serif italic text-amber-800 font-bold text-lg">Mostafa Eid</span>
+                    For successfully completing the course{' '}
+                    <span className="course-name text-white font-bold">{certificate.courseName}</span>
                   </div>
-                  <div className="w-16 h-1 bg-amber-800/20" />
+                  {certificate.startDate && certificate.issueDate ? (
+                    <div className="text-[16px] text-[#b0b0b0] mt-1">
+                      From {new Date(certificate.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} To {new Date(certificate.issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </div>
+                  ) : certificate.courseDuration ? (
+                    <div className="text-[16px] text-[#b0b0b0] mt-1">
+                      Duration: {certificate.courseDuration}
+                    </div>
+                  ) : null}
                 </div>
-              </div>
 
+                {/* Signature Block */}
+                <div className="signature-block absolute bottom-[40px] left-[38px] w-[280px] z-30 text-left">
+                  <div className="label text-[15px] font-extrabold mb-[6px] text-white">Ceo's Signature</div>
+                  <div className="sig text-[34px] text-[#f2f2f2] border-b border-white/30 pb-[6px] min-h-[40px]" style={{ fontFamily: "'Brush Script MT', 'Segoe Script', cursive" }}>
+                    Ahmed Bin Omara
+                  </div>
+                </div>
+
+                {/* Instructor Block */}
+                <div className="instructor-block absolute bottom-[40px] left-[335px] w-[340px] z-30 text-left">
+                  <div className="label text-[26px] font-extrabold text-[#e12525] mb-[8px]">Instructor</div>
+                  <div className="value text-[17px] text-[#eee] border-t border-white/25 pt-[8px] min-h-[20px]">
+                    {certificate.instructorName || 'HakSpace Instructor'}
+                  </div>
+                </div>
+
+                {/* Date Block (Certificate Creation Date) */}
+                <div className="date-block absolute bottom-[40px] right-[120px] w-[220px] z-30 text-left">
+                  <div className="label text-[26px] font-extrabold text-[#e12525] mb-[8px]">Date</div>
+                  <div className="value text-[17px] text-[#eee] border-t border-white/25 pt-[8px] min-h-[20px] whitespace-nowrap">
+                    {new Date(certificate.issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         )}
 
       </div>
+
+      <style>{`
+        @media print {
+          @page {
+            size: 1200px 675px landscape;
+            margin: 0;
+          }
+          body, html, #root {
+            background-color: #0c0c0c !important;
+            color: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .certificate {
+            box-shadow: none !important;
+            margin: 0 auto !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            page-break-inside: avoid !important;
+          }
+          .side-panel {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
