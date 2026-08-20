@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Search, Filter, MessageSquare, ExternalLink, FileText, Globe, User, BookOpen, CheckCircle, Clock } from 'lucide-react'
+import { Search, Filter, MessageSquare, ExternalLink, FileText, Globe, User, BookOpen, CheckCircle, Clock, ShieldCheck } from 'lucide-react'
 import { apiClient } from '../../api/client'
+import { MemberBadge, BadgeLevel } from '../../components/MemberBadge'
 
 interface MemberCourse {
   courseId: number
@@ -24,6 +25,7 @@ interface CommunityMember {
   cvUrl?: string
   portfolioUrl?: string
   joinedDate: string
+  badge?: BadgeLevel
   courses: MemberCourse[]
 }
 
@@ -66,6 +68,19 @@ export default function AdminCommunityPage() {
       toast.error(t('courses.error'))
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleBadgeChange = async (userId: number, newBadge: BadgeLevel) => {
+    try {
+      await apiClient.put(`/api/admin/community/${userId}/badge`, { badge: newBadge })
+      toast.success(t('added_success', 'Badge updated successfully!'))
+      setMembers((prev) =>
+        prev.map((m) => (m.id === userId ? { ...m, badge: newBadge } : m))
+      )
+    } catch (err: any) {
+      console.error(err)
+      toast.error(t('error_update', 'Failed to update badge'))
     }
   }
 
@@ -154,6 +169,24 @@ export default function AdminCommunityPage() {
                       {member.specialization}
                     </span>
                   )}
+                </div>
+
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-900/80">
+                  <div className="flex items-center gap-2">
+                    <MemberBadge badge={member.badge || 'SILVER'} size="sm" />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span className="text-[10px] text-zinc-500 font-bold uppercase">Badge:</span>
+                    <select
+                      value={member.badge || 'SILVER'}
+                      onChange={(e) => handleBadgeChange(member.id, e.target.value as BadgeLevel)}
+                      className="bg-zinc-900 border border-zinc-800 rounded-lg text-xs font-bold text-white px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    >
+                      <option value="SILVER">🥈 Silver</option>
+                      <option value="BRONZE">🥉 Bronze</option>
+                      <option value="GOLD">🥇 Gold</option>
+                    </select>
+                  </div>
                 </div>
 
                 <p className="text-zinc-400 text-xs line-clamp-2 leading-relaxed">{member.bio || 'No bio provided.'}</p>

@@ -6,6 +6,7 @@ import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, 
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import { apiClient } from '../../api/client'
+import { MemberBadge, BadgeLevel } from '../../components/MemberBadge'
 
 interface CourseSummary {
   id: number
@@ -53,6 +54,7 @@ interface UserProfileData {
   cvUrl?: string
   portfolioUrl?: string
   role: string
+  badge?: BadgeLevel | string
 }
 
 interface DashboardResponse {
@@ -149,6 +151,7 @@ export default function ProfilePage() {
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-2xl md:text-3xl font-extrabold text-white">{profile?.fullName}</h1>
+                  <MemberBadge badge={profile?.badge || 'SILVER'} size="md" />
                   {profile?.specialization && (
                     <span className="px-3 py-1 bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs font-bold rounded-full">
                       {profile.specialization}
