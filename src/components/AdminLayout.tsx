@@ -26,6 +26,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navItems = [
     { label: t('admin.overview'), path: '/admin/dashboard', icon: LayoutDashboard },
+    { label: t('admin_community.title'), path: '/admin/community', icon: Users },
     { label: t('admin.courses_management'), path: '/admin/courses', icon: BookOpen },
     { label: t('admin.leads_management'), path: '/admin/leads', icon: Users },
     { label: t('admin.blacklist'), path: '/admin/blacklist', icon: ShieldOff },

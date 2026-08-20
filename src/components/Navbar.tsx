@@ -53,14 +53,21 @@ export default function Navbar() {
             {t('certificate.verify_nav')}
           </Link>
 
-          {user && (
+          {user ? (
             <>
-              {user.role === 'ADMIN' && (
+              {user.role === 'ADMIN' ? (
                 <Link
                   to="/admin/dashboard"
                   className="text-sm font-semibold text-brand-400 hover:text-brand-300 transition flex items-center gap-1"
                 >
                   {t('nav.adminPanel')} <ArrowUpRight size={14} />
+                </Link>
+              ) : (
+                <Link
+                  to="/profile"
+                  className="text-sm font-semibold text-brand-400 hover:text-brand-300 transition"
+                >
+                  {t('nav.profile')}
                 </Link>
               )}
               <button
@@ -70,6 +77,21 @@ export default function Navbar() {
                 {t('nav.logout')}
               </button>
             </>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link
+                to="/login"
+                className="px-4 py-2 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/50 rounded-xl text-sm font-semibold transition text-white"
+              >
+                {t('nav.login')}
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 bg-brand-600 hover:bg-brand-500 rounded-xl text-sm font-bold transition text-white shadow-lg shadow-brand-900/20"
+              >
+                {t('nav.joinUs')}
+              </Link>
+            </div>
           )}
         </nav>
       </div>
@@ -93,15 +115,23 @@ export default function Navbar() {
             {t('certificate.verify_nav')}
           </Link>
 
-          {user && (
+          {user ? (
             <>
-              {user.role === 'ADMIN' && (
+              {user.role === 'ADMIN' ? (
                 <Link
                   to="/admin/dashboard"
                   onClick={() => setIsMenuOpen(false)}
                   className="text-base font-semibold text-brand-400 hover:text-brand-300 transition flex items-center gap-1 px-2 py-1"
                 >
                   {t('nav.adminPanel')} <ArrowUpRight size={16} />
+                </Link>
+              ) : (
+                <Link
+                  to="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-base font-semibold text-brand-400 hover:text-brand-300 transition px-2 py-1"
+                >
+                  {t('nav.profile')}
                 </Link>
               )}
               <button
@@ -111,6 +141,23 @@ export default function Navbar() {
                 {t('nav.logout')}
               </button>
             </>
+          ) : (
+            <div className="flex flex-col gap-2 pt-2 border-t border-zinc-900">
+              <Link
+                to="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className="w-full text-center px-4 py-3 border border-zinc-800 hover:bg-zinc-900/50 rounded-xl text-base font-semibold transition text-white"
+              >
+                {t('nav.login')}
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setIsMenuOpen(false)}
+                className="w-full text-center px-4 py-3 bg-brand-600 hover:bg-brand-500 rounded-xl text-base font-bold transition text-white"
+              >
+                {t('nav.joinUs')}
+              </Link>
+            </div>
           )}
         </div>
       )}

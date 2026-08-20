@@ -26,15 +26,11 @@ export default function LoginPage() {
 
     setLoading(true)
     try {
-      const response = await apiClient.post('/api/auth/login', { email, password })
+      const response = await apiClient.post('/api/auth/login', { login: email, password })
       const { token, user } = response.data
       
       // Save credentials in Zustand + LocalStorage
-      loginStore(token, {
-        id: user.id,
-        role: user.role,
-        email: email, // Set email manually since backend doesn't return it in the inner user object
-      })
+      loginStore(token, user)
 
       toast.success(t('login.success'))
       
@@ -42,7 +38,7 @@ export default function LoginPage() {
       if (user.role === 'ADMIN') {
         navigate('/admin/dashboard')
       } else {
-        navigate('/')
+        navigate('/profile')
       }
     } catch (err: any) {
       console.error(err)
@@ -53,20 +49,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black px-4">
+    <div className="min-h-screen flex items-center justify-center bg-black px-4 pt-20">
       <Navbar />
-      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl transition hover:border-zinc-700">
+      <div className="w-full max-w-md bg-zinc-900/90 border border-zinc-800 rounded-2xl p-8 shadow-2xl transition hover:border-zinc-700 backdrop-blur-md">
         <div className="text-center mb-8">
           <img src={logoImg} alt="HakSpace" className="h-14 w-auto object-contain rounded-xl mx-auto mb-4" />
           <h2 className="text-3xl font-extrabold text-white tracking-tight">{t('login.welcome')}</h2>
-          <p className="text-zinc-400 mt-2">{t('login.subtitle')}</p>
+          <p className="text-zinc-400 mt-2 text-sm">{t('login.subtitle')}</p>
         </div>
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">{t('login.email_label')}</label>
             <input 
-              type="email"
-              className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+              type="text"
+              className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition text-sm"
               placeholder={t('login.email_placeholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -78,7 +74,7 @@ export default function LoginPage() {
             <div className="relative">
               <input 
                 type={showPassword ? 'text' : 'password'} 
-                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition pr-12" 
+                className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition pr-12 text-sm" 
                 placeholder={t('login.password_placeholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -105,6 +101,17 @@ export default function LoginPage() {
               t('login.submit')
             )}
           </button>
+
+          <div className="text-center pt-3 text-sm text-zinc-400 border-t border-zinc-800 mt-4">
+            {t('login.no_account')}{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className="text-brand-400 hover:text-brand-300 font-bold underline ml-1"
+            >
+              {t('login.register_link')}
+            </button>
+          </div>
         </form>
       </div>
     </div>

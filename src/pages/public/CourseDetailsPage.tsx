@@ -148,10 +148,10 @@ export default function CourseDetailsPage() {
   const [success, setSuccess] = useState(false)
   const [selectedGroupId, setSelectedGroupId] = useState<number | undefined>(undefined)
 
-  // Form state
-  const [fullName, setFullName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
+  // Form state auto-filled if user logged in
+  const [fullName, setFullName] = useState(user?.fullName || '')
+  const [phone, setPhone] = useState(user?.phone || '')
+  const [email, setEmail] = useState(user?.email || '')
   const [city, setCity] = useState('')
   const [contactMethod, setContactMethod] = useState('WHATSAPP')
   const [contactTime, setContactTime] = useState('ANYTIME')
