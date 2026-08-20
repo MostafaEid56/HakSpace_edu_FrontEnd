@@ -1,6 +1,6 @@
 import { Navigate, useLocation, Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
-import { LayoutDashboard, Users, LogOut, BookOpen, ShieldOff } from 'lucide-react'
+import { LayoutDashboard, Users, LogOut, BookOpen, ShieldOff, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import logoImg from '../assets/FinalLogo.png'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -28,6 +28,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { label: t('admin.overview'), path: '/admin/dashboard', icon: LayoutDashboard },
     { label: t('admin_community.title'), path: '/admin/community', icon: Users },
     { label: t('admin.courses_management'), path: '/admin/courses', icon: BookOpen },
+    { label: t('admin_workshops.title'), path: '/admin/workshops', icon: Sparkles },
     { label: t('admin.leads_management'), path: '/admin/leads', icon: Users },
     { label: t('admin.blacklist'), path: '/admin/blacklist', icon: ShieldOff },
   ]

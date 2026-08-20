@@ -1,6 +1,7 @@
 {
   "nav": {
     "courses": "الدورات",
+    "workshops": "الورش التدريبية",
     "adminPanel": "لوحة الإدارة",
     "joinUs": "انضم إلينا",
     "login": "تسجيل الدخول",
@@ -38,6 +39,42 @@
     "students": "طالب",
     "duration": "المدة",
     "partners_title": "شركاء النجاح"
+  },
+  "workshops": {
+    "title": "الورش التدريبية التفاعلية",
+    "subtitle": "انضم إلى الورش المباشرة، الجلسات التقنية، والدروس التطبيقية القادمة.",
+    "featured": "الورشة القادمة المميزة",
+    "other_workshops": "جميع الورش التدريبية",
+    "search_placeholder": "البحث عن ورشة...",
+    "no_workshops": "لا توجد ورش تدريبية متاحة حالياً.",
+    "loading": "جاري تحميل الورش التدريبية...",
+    "error": "حدث خطأ أثناء تحميل الورش التدريبية.",
+    "register": "التسجيل في الورشة",
+    "view_details": "عرض تفاصيل الورشة",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "duration": "المدة",
+    "instructor": "المحاضر",
+    "price": "السعر",
+    "capacity": "السعة الاستيعابية",
+    "remaining_seats": "مقاعد متبقية",
+    "fully_booked": "اكتملت المقاعد",
+    "free": "ورشة مجانية"
+  },
+  "admin_workshops": {
+    "title": "إدارة الورش التدريبية",
+    "subtitle": "إنشاء، تعديل، إدارة السعة، ومتابعة التسجيلات للورش.",
+    "add_workshop": "إضافة ورشة جديدة",
+    "edit_workshop": "تعديل الورشة",
+    "status_ACTIVE": "متاحة للتسجيل",
+    "status_COMING_SOON": "قريباً",
+    "status_PENDING": "مؤجلة / قيد الانتظار",
+    "status_IN_PROGRESS": "جارية حالياً",
+    "status_COMPLETED": "مكتملة",
+    "capacity_label": "الحد الأقصى للمشاركين",
+    "participants_label": "المشاركون الحاليون",
+    "registrations_title": "تسجيلات الورشة",
+    "no_registrations": "لا توجد تسجيلات مسجلة لهذه الورشة."
   },
   "courses": {
     "title": "الدورات التدريبية",
@@ -446,5 +483,6 @@
     "courses_count": "الدورات",
     "whatsapp_contact": "التواصل عبر واتساب",
     "no_members": "لم يتم العثور على أعضاء يطابقون معايير البحث."
-  }
+  },
+  "added_success": "تم تسجيلك في الورشة بنجاح!"
 }

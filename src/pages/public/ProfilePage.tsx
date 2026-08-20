@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save } from 'lucide-react'
+import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save, Sparkles } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import { apiClient } from '../../api/client'
@@ -21,6 +21,24 @@ interface CourseSummary {
   enrollmentDate?: string
   completionDate?: string
   certificateCode?: string
+}
+
+interface WorkshopSummary {
+  id: number
+  title: string
+  description: string
+  imageUrl: string
+  workshopDate?: string
+  startTime?: string
+  endTime?: string
+  duration?: string
+  instructorName: string
+  price: number
+  maxCapacity: number
+  currentParticipants: number
+  remainingSeats: number
+  status: string
+  registrationDate?: string
 }
 
 interface UserProfileData {
@@ -43,6 +61,10 @@ interface DashboardResponse {
   upcomingCourses: CourseSummary[]
   completedCourses: CourseSummary[]
   availableCourses: CourseSummary[]
+  inProgressWorkshops?: WorkshopSummary[]
+  upcomingWorkshops?: WorkshopSummary[]
+  completedWorkshops?: WorkshopSummary[]
+  availableWorkshops?: WorkshopSummary[]
 }
 
 export default function ProfilePage() {
@@ -367,6 +389,26 @@ export default function ProfilePage() {
             />
           )}
         </div>
+
+        {/* User Workshops Section */}
+        <div className="space-y-6 pt-6 border-t border-zinc-800">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <Sparkles size={22} className="text-brand-500" /> {t('workshops.title')} ({ (dashboardData?.upcomingWorkshops?.length || 0) + (dashboardData?.inProgressWorkshops?.length || 0) + (dashboardData?.completedWorkshops?.length || 0) })
+            </h2>
+            <Link to="/workshops" className="text-xs text-brand-400 hover:underline font-bold">
+              View All Workshops &rarr;
+            </Link>
+          </div>
+
+          <RenderWorkshopGrid
+            workshops={[
+              ...(dashboardData?.upcomingWorkshops || []),
+              ...(dashboardData?.inProgressWorkshops || []),
+              ...(dashboardData?.completedWorkshops || []),
+            ]}
+          />
+        </div>
       </div>
     </div>
   )
@@ -443,6 +485,49 @@ function RenderCourseGrid({
               className="px-3.5 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition"
             >
               {isAvailableCatalog ? t('courses.enroll') : t('courses.view_details')}
+            </Link>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function RenderWorkshopGrid({ workshops }: { workshops: WorkshopSummary[] }) {
+  if (workshops.length === 0) {
+    return (
+      <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 text-center text-zinc-500 text-xs">
+        No workshop registrations found yet.
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {workshops.map((w) => (
+        <div key={w.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="h-36 relative overflow-hidden bg-zinc-950">
+              <img src={w.imageUrl || 'https://images.unsplash.com/photo-1677442136019-21780efad99a'} alt={w.title} className="w-full h-full object-cover" />
+              <div className="absolute top-2.5 right-2.5">
+                <span className="px-2.5 py-0.5 bg-brand-500/20 border border-brand-500/30 text-brand-400 text-[10px] font-bold rounded-full backdrop-blur-md">
+                  {w.status}
+                </span>
+              </div>
+            </div>
+            <div className="p-4 space-y-2">
+              <h4 className="font-bold text-white text-sm line-clamp-1">{w.title}</h4>
+              <p className="text-zinc-400 text-xs line-clamp-2">{w.description}</p>
+              <div className="text-[11px] text-zinc-400 pt-1">
+                <span>📅 Date: {w.workshopDate || 'TBA'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 pt-0 flex justify-between items-center text-xs">
+            <span className="text-zinc-500 text-[11px]">{w.duration || '3 Hours'}</span>
+            <Link to={`/workshops/${w.id}`} className="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl">
+              View Details
             </Link>
           </div>
         </div>

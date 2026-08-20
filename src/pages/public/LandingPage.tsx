@@ -21,11 +21,30 @@ interface Course {
   price: number
   rating: number
   studentCount: number
+  status: string
   groups: { id: number; groupName: string; isAvailable: boolean }[]
 }
 
 const fetchCourses = async (): Promise<Course[]> => {
   const response = await apiClient.get('/api/courses')
+  return response.data
+}
+
+interface Workshop {
+  id: number
+  title: string
+  description: string
+  imageUrl: string
+  workshopDate?: string
+  duration?: string
+  instructorName: string
+  price: number
+  remainingSeats: number
+  status: string
+}
+
+const fetchWorkshops = async (): Promise<Workshop[]> => {
+  const response = await apiClient.get('/api/workshops')
   return response.data
 }
 
@@ -39,8 +58,14 @@ export default function LandingPage() {
     queryFn: fetchCourses,
   })
 
-  // Take first 3 courses as featured
+  const { data: workshops } = useQuery<Workshop[]>({
+    queryKey: ['featuredWorkshops'],
+    queryFn: fetchWorkshops,
+  })
+
+  // Take first 3 courses and workshops
   const featuredCourses = courses ? courses.slice(0, 3) : []
+  const featuredWorkshops = workshops ? workshops.slice(0, 3) : []
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-brand-500 selection:text-white">
@@ -164,6 +189,21 @@ export default function LandingPage() {
                     alt={course.title}
                     className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                   />
+                  <div className="absolute top-3 right-3 z-10">
+                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md ${
+                      !course.status || course.status === 'ACTIVE'
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                        : course.status === 'PENDING'
+                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                        : course.status === 'COMING_SOON'
+                        ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                        : course.status === 'IN_PROGRESS'
+                        ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                        : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+                    }`}>
+                      {t(`admin_courses.status_${course.status || 'ACTIVE'}`)}
+                    </span>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent"></div>
                 </div>
 
@@ -189,6 +229,69 @@ export default function LandingPage() {
           </div>
         )}
       </section>
+
+      {/* Featured Workshops Section */}
+      {featuredWorkshops.length > 0 && (
+        <section className="py-16 px-6 max-w-7xl mx-auto border-t border-zinc-900">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-widest text-brand-400 block mb-2">Live Masterclasses</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">{t('workshops.title')}</h2>
+              <p className="text-zinc-400">{t('workshops.subtitle')}</p>
+            </div>
+            <button
+              onClick={() => navigate('/workshops')}
+              className="mt-4 md:mt-0 text-brand-400 hover:text-brand-300 font-semibold flex items-center gap-1.5 transition text-sm group"
+            >
+              {t('workshops.view_details')} <ArrowRight size={16} className={`transition-transform ${i18n.language === 'ar' ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {featuredWorkshops.map((w) => (
+              <div
+                key={w.id}
+                onClick={() => navigate(`/workshops/${w.id}`)}
+                className="group bg-zinc-900 border border-zinc-850 hover:border-brand-500/40 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
+              >
+                <div className="relative h-44 overflow-hidden bg-zinc-850">
+                  <img
+                    src={w.imageUrl || 'https://images.unsplash.com/photo-1677442136019-21780efad99a'}
+                    alt={w.title}
+                    className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute top-3 right-3">
+                    <span className="px-2.5 py-1 bg-brand-600/90 text-white font-bold text-[10px] rounded-full uppercase tracking-wider backdrop-blur-md">
+                      {w.status}
+                    </span>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent"></div>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-brand-500 transition line-clamp-1">
+                      {w.title}
+                    </h3>
+                    <p className="text-zinc-400 text-xs mb-4 line-clamp-2 leading-relaxed">
+                      {w.description}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-4 border-t border-zinc-800 text-xs">
+                    <span className="font-bold text-white">
+                      {w.price === 0 ? t('workshops.free') : `${w.price} EGP`}
+                    </span>
+                    <span className="text-zinc-400">
+                      📅 {w.workshopDate || 'TBA'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Location Section */}
       <section className="py-16 px-6 max-w-7xl mx-auto">

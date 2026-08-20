@@ -1,6 +1,7 @@
 {
   "nav": {
     "courses": "Courses",
+    "workshops": "Workshops",
     "adminPanel": "Admin Panel",
     "joinUs": "Join Us",
     "login": "Log In",
@@ -38,6 +39,42 @@
     "students": "students",
     "duration": "Duration",
     "partners_title": "Our Partners"
+  },
+  "workshops": {
+    "title": "Interactive Workshops",
+    "subtitle": "Join our upcoming live workshops, masterclasses, and hands-on tech sessions.",
+    "featured": "Featured / Next Workshop",
+    "other_workshops": "All Workshops",
+    "search_placeholder": "Search for a workshop...",
+    "no_workshops": "No workshops available at the moment.",
+    "loading": "Loading workshops...",
+    "error": "An error occurred while loading workshops.",
+    "register": "Register for Workshop",
+    "view_details": "View Workshop Details",
+    "date": "Date",
+    "time": "Time",
+    "duration": "Duration",
+    "instructor": "Instructor",
+    "price": "Price",
+    "capacity": "Capacity",
+    "remaining_seats": "Seats Left",
+    "fully_booked": "Fully Booked",
+    "free": "Free Workshop"
+  },
+  "admin_workshops": {
+    "title": "Workshops Management",
+    "subtitle": "Create, edit, manage capacity, and track registrations for workshops.",
+    "add_workshop": "Add New Workshop",
+    "edit_workshop": "Edit Workshop",
+    "status_ACTIVE": "Active",
+    "status_COMING_SOON": "Coming Soon",
+    "status_PENDING": "Pending",
+    "status_IN_PROGRESS": "In Progress",
+    "status_COMPLETED": "Completed",
+    "capacity_label": "Max Capacity",
+    "participants_label": "Current Participants",
+    "registrations_title": "Workshop Registrations",
+    "no_registrations": "No registrations recorded for this workshop."
   },
   "courses": {
     "title": "Training Courses",
@@ -446,5 +483,6 @@
     "courses_count": "Courses",
     "whatsapp_contact": "Contact on WhatsApp",
     "no_members": "No community members found matching your criteria."
-  }
+  },
+  "added_success": "Successfully registered for the workshop!"
 }

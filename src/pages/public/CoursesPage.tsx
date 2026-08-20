@@ -105,6 +105,21 @@ export default function CoursesPage() {
                     alt={course.title}
                     className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                   />
+                  <div className="absolute top-3 right-3 z-10">
+                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md ${
+                      course.status === 'ACTIVE'
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                        : course.status === 'PENDING'
+                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                        : course.status === 'COMING_SOON'
+                        ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                        : course.status === 'IN_PROGRESS'
+                        ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                        : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+                    }`}>
+                      {t(`admin_courses.status_${course.status || 'ACTIVE'}`)}
+                    </span>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
                     <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-zinc-300 flex items-center gap-1">
