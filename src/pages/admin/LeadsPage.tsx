@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../../api/client'
 import { toast } from 'react-toastify'
-import { Mail, Phone, MapPin, Calendar, MessageCircle, FileText, CheckCircle2 } from 'lucide-react'
+import { Mail, Phone, MapPin, Calendar, MessageCircle, FileText, CheckCircle2, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 interface Course {
@@ -109,6 +109,22 @@ export default function LeadsPage() {
 
   const handleStatusChange = (id: number, status: string) => {
     mutation.mutate({ id, status })
+  }
+
+  const handleDeleteLead = async (leadId: number) => {
+    if (!window.confirm(t('common.confirm_delete', 'Are you sure you want to delete this lead?'))) return
+    try {
+      if (leadType === 'COURSES') {
+        await apiClient.delete(`/api/admin/leads/${leadId}`)
+        queryClient.invalidateQueries({ queryKey: ['leads'] })
+      } else {
+        await apiClient.delete(`/api/admin/workshops/registrations/${leadId}`)
+        queryClient.invalidateQueries({ queryKey: ['workshopLeads'] })
+      }
+      toast.success(t('leads.delete_success', 'Lead deleted successfully'))
+    } catch (err: any) {
+      toast.error(t('leads.delete_error', 'Failed to delete lead'))
+    }
   }
 
   const handleWorkshopStatusChange = async (regId: number, status: string) => {
@@ -274,6 +290,7 @@ export default function LeadsPage() {
                   <th className="py-4 px-6">{t('leads.col_contact')}</th>
                   <th className="py-4 px-6">{t('leads.notes')}</th>
                   <th className="py-4 px-6">{t('leads.col_status')}</th>
+                  <th className="py-4 px-6 text-right">{t('leads.col_actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800 text-sm">
@@ -353,6 +370,17 @@ export default function LeadsPage() {
                         <option value="ENROLLED" className="bg-zinc-950 text-green-400">{statusLabels.ENROLLED}</option>
                         <option value="CLOSED" className="bg-zinc-950 text-zinc-400">{statusLabels.CLOSED}</option>
                       </select>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-4 px-6 text-right">
+                      <button
+                        onClick={() => handleDeleteLead(lead.id)}
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition"
+                        title={t('common.delete', 'Delete Lead')}
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))}
