@@ -39,10 +39,11 @@ const updateLeadStatus = async ({ id, status }: { id: number; status: string }) 
 export default function LeadsPage() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
+  const [leadType, setLeadType] = useState<'COURSES' | 'WORKSHOPS'>('COURSES')
   const [activeTab, setActiveTab] = useState<'ALL' | 'NEW' | 'CONTACTED' | 'ENROLLED' | 'CLOSED'>('ALL')
   const [selectedCourseId, setSelectedCourseId] = useState<string>('ALL')
 
-  const { data: leads, isLoading, error } = useQuery<Enrollment[]>({
+  const { data: courseLeads, isLoading: isLoadingCourseLeads, error: errorCourseLeads } = useQuery<Enrollment[]>({
     queryKey: ['leads', selectedCourseId],
     queryFn: async () => {
       const url = selectedCourseId === 'ALL'
@@ -51,6 +52,29 @@ export default function LeadsPage() {
       const response = await apiClient.get(url)
       return response.data
     },
+    enabled: leadType === 'COURSES'
+  })
+
+  const { data: workshopLeads, isLoading: isLoadingWorkshopLeads, error: errorWorkshopLeads } = useQuery<any[]>({
+    queryKey: ['workshopLeads', selectedCourseId],
+    queryFn: async () => {
+      if (selectedCourseId === 'ALL') {
+        const workshopsRes = await apiClient.get('/api/admin/workshops')
+        const workshops = workshopsRes.data || []
+        let allRegs: any[] = []
+        for (const w of workshops) {
+          try {
+            const regRes = await apiClient.get(`/api/admin/workshops/${w.id}/registrations`)
+            allRegs = allRegs.concat(regRes.data || [])
+          } catch (e) {}
+        }
+        return allRegs
+      } else {
+        const regRes = await apiClient.get(`/api/admin/workshops/${selectedCourseId}/registrations`)
+        return regRes.data || []
+      }
+    },
+    enabled: leadType === 'WORKSHOPS'
   })
 
   const { data: courses } = useQuery<Course[]>({
@@ -58,7 +82,17 @@ export default function LeadsPage() {
     queryFn: async () => {
       const res = await apiClient.get('/api/admin/courses')
       return res.data
-    }
+    },
+    enabled: leadType === 'COURSES'
+  })
+
+  const { data: workshopsList } = useQuery<any[]>({
+    queryKey: ['adminWorkshopsList'],
+    queryFn: async () => {
+      const res = await apiClient.get('/api/admin/workshops')
+      return res.data
+    },
+    enabled: leadType === 'WORKSHOPS'
   })
 
   const mutation = useMutation({
@@ -76,6 +110,34 @@ export default function LeadsPage() {
   const handleStatusChange = (id: number, status: string) => {
     mutation.mutate({ id, status })
   }
+
+  const handleWorkshopStatusChange = async (regId: number, status: string) => {
+    try {
+      await apiClient.patch(`/api/admin/workshops/registrations/${regId}/status`, { status })
+      queryClient.invalidateQueries({ queryKey: ['workshopLeads'] })
+      toast.success(t('leads.update_success'))
+    } catch (err: any) {
+      toast.error(t('leads.update_error'))
+    }
+  }
+
+  const leads = leadType === 'COURSES' ? courseLeads : (workshopLeads?.map(wl => ({
+    id: wl.id,
+    fullName: wl.fullName,
+    phone: wl.phone,
+    email: wl.email,
+    city: wl.city,
+    contactMethod: wl.contactMethod || 'N/A',
+    contactTime: wl.contactTime || 'N/A',
+    notes: wl.notes,
+    status: wl.status === 'CONFIRMED' ? 'ENROLLED' : wl.status,
+    rawStatus: wl.status,
+    course: wl.workshop ? { id: wl.workshop.id, title: wl.workshop.title } : { id: 0, title: 'Workshop' },
+    createdAt: wl.createdAt
+  })) as any[])
+
+  const isLoading = leadType === 'COURSES' ? isLoadingCourseLeads : isLoadingWorkshopLeads
+  const error = leadType === 'COURSES' ? errorCourseLeads : errorWorkshopLeads
 
   const filteredLeads = leads
     ? activeTab === 'ALL'
@@ -114,20 +176,51 @@ export default function LeadsPage() {
         </div>
         
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-          {/* Course Filter Dropdown */}
+          {/* Courses / Workshops Toggle */}
+          <div className="flex bg-zinc-900 border border-zinc-850 p-1 rounded-xl">
+            <button
+              onClick={() => { setLeadType('COURSES'); setSelectedCourseId('ALL'); }}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
+                leadType === 'COURSES'
+                  ? 'bg-brand-600 text-white shadow-md'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              {t('nav.courses', 'Courses')}
+            </button>
+            <button
+              onClick={() => { setLeadType('WORKSHOPS'); setSelectedCourseId('ALL'); }}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
+                leadType === 'WORKSHOPS'
+                  ? 'bg-brand-600 text-white shadow-md'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              {t('nav.workshops', 'Workshops')}
+            </button>
+          </div>
+
+          {/* Filter Dropdown */}
           <select
             value={selectedCourseId}
             onChange={(e) => setSelectedCourseId(e.target.value)}
             className="px-4 py-2.5 bg-zinc-900 border border-zinc-850 rounded-xl text-xs font-bold text-zinc-350 focus:outline-none focus:ring-1 focus:ring-brand-500 min-w-[200px] cursor-pointer"
           >
             <option value="ALL" className="bg-zinc-950 text-zinc-300">
-              {t('leads.filter_all_courses')}
+              {leadType === 'COURSES' ? t('leads.filter_all_courses') : t('common.all', 'All Workshops')}
             </option>
-            {courses?.map((course) => (
-              <option key={course.id} value={course.id.toString()} className="bg-zinc-950 text-zinc-300">
-                {course.title}
-              </option>
-            ))}
+            {leadType === 'COURSES'
+              ? courses?.map((course) => (
+                  <option key={course.id} value={course.id.toString()} className="bg-zinc-950 text-zinc-300">
+                    {course.title}
+                  </option>
+                ))
+              : workshopsList?.map((ws) => (
+                  <option key={ws.id} value={ws.id.toString()} className="bg-zinc-950 text-zinc-300">
+                    {ws.title}
+                  </option>
+                ))
+            }
           </select>
 
           {/* Tab Filters */}
@@ -177,14 +270,14 @@ export default function LeadsPage() {
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-950/50 text-zinc-400 text-xs font-bold uppercase tracking-wider">
                   <th className="py-4 px-6">{t('leads.col_applicant')}</th>
-                  <th className="py-4 px-6">{t('leads.col_course_group')}</th>
+                  <th className="py-4 px-6">{leadType === 'COURSES' ? t('leads.col_course_group') : 'Workshop'}</th>
                   <th className="py-4 px-6">{t('leads.col_contact')}</th>
                   <th className="py-4 px-6">{t('leads.notes')}</th>
                   <th className="py-4 px-6">{t('leads.col_status')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800 text-sm">
-                {filteredLeads.map((lead) => (
+                {filteredLeads.map((lead: any) => (
                   <tr key={lead.id} className="hover:bg-zinc-900/40 transition">
                     {/* Info */}
                     <td className="py-4 px-6 space-y-1">
@@ -196,7 +289,7 @@ export default function LeadsPage() {
                       </div>
                     </td>
 
-                    {/* Course & Group */}
+                    {/* Course / Workshop */}
                     <td className="py-4 px-6">
                       <span className="font-semibold text-zinc-200">
                         {lead.course ? lead.course.title : t('common.na')}
@@ -210,7 +303,7 @@ export default function LeadsPage() {
                         </div>
                       )}
                       <p className="text-[10px] text-zinc-500 mt-1">
-                        {t('leads.registered')}: {new Date(lead.createdAt).toLocaleDateString()}
+                        {t('leads.registered')}: {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'N/A'}
                       </p>
                     </td>
 
@@ -242,9 +335,17 @@ export default function LeadsPage() {
                     <td className="py-4 px-6">
                       <select
                         value={lead.status}
-                        onChange={(e) => handleStatusChange(lead.id, e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          if (leadType === 'COURSES') {
+                            handleStatusChange(lead.id, val)
+                          } else {
+                            const wsStatus = val === 'ENROLLED' ? 'CONFIRMED' : val
+                            handleWorkshopStatusChange(lead.id, wsStatus)
+                          }
+                        }}
                         className={`px-3 py-1.5 rounded-xl border text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-500 text-white ${
-                          statusColors[lead.status] || 'bg-zinc-800'
+                          statusColors[lead.status as keyof typeof statusColors] || 'bg-zinc-800'
                         }`}
                       >
                         <option value="NEW" className="bg-zinc-950 text-blue-400">{statusLabels.NEW}</option>

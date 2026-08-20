@@ -427,14 +427,37 @@ export default function AdminWorkshopsPage() {
                       {reg.notes && <p className="text-brand-400 text-[11px] mt-1">Note: "{reg.notes}"</p>}
                     </div>
 
-                    <a
-                      href={`https://wa.me/${reg.phone}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-3 py-1.5 bg-green-600/20 text-green-400 border border-green-500/30 font-bold rounded-xl flex items-center gap-1.5 self-start md:self-auto"
-                    >
-                      WhatsApp
-                    </a>
+                    <div className="flex items-center gap-2 self-start md:self-auto">
+                      <select
+                        value={reg.status}
+                        onChange={async (e) => {
+                          const newStatus = e.target.value
+                          try {
+                            await apiClient.patch(`/api/admin/workshops/registrations/${reg.id}/status`, { status: newStatus })
+                            toast.success(`Registration status updated to ${newStatus}`)
+                            if (selectedWorkshopForRegs) openRegistrationsModal(selectedWorkshopForRegs)
+                            fetchWorkshops()
+                          } catch (err: any) {
+                            toast.error(err.response?.data?.message || 'Failed to update registration status')
+                          }
+                        }}
+                        className="px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white font-bold focus:outline-none"
+                      >
+                        <option value="NEW">NEW</option>
+                        <option value="CONTACTED">CONTACTED</option>
+                        <option value="CONFIRMED">CONFIRMED</option>
+                        <option value="CLOSED">CLOSED</option>
+                      </select>
+
+                      <a
+                        href={`https://wa.me/${reg.phone}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1.5 bg-green-600/20 text-green-400 border border-green-500/30 font-bold rounded-xl flex items-center gap-1.5"
+                      >
+                        WhatsApp
+                      </a>
+                    </div>
                   </div>
                 ))}
               </div>
