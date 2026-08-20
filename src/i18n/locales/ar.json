@@ -106,7 +106,11 @@
     "duration_label": "المدة",
     "rating_label": "التقييم",
     "materials_title": "المواد الدراسية",
-    "materials_button": "عرض المواد الدراسية"
+    "materials_button": "عرض المواد الدراسية",
+    "status_banner_PENDING": "الدورة مؤجلة — التسجيل غير متاح حالياً.",
+    "status_banner_COMING_SOON": "قريباً — التسجيل لم يفتح بعد.",
+    "status_banner_IN_PROGRESS": "الدورة جارية — انتهى التسجيل.",
+    "status_banner_COMPLETED": "الدورة مكتملة — انتهت هذه الدورة."
   },
   "login": {
     "welcome": "مرحباً بعودتك",
@@ -204,7 +208,16 @@
     "validation_materials_url": "يرجى إدخال رابط صالح (يجب أن يبدأ بـ http:// أو https://).",
     "edit_tooltip": "تعديل الدورة",
     "delete_tooltip": "حذف الدورة",
-    "full_badge": "مكتمل"
+    "full_badge": "مكتمل",
+    "col_status": "الحالة",
+    "status_change": "تغيير الحالة",
+    "status_updated": "تم تحديث حالة الدورة!",
+    "status_error": "فشل تحديث حالة الدورة.",
+    "status_ACTIVE": "التسجيل مفتوح",
+    "status_IN_PROGRESS": "الدورة جارية",
+    "status_PENDING": "الدورة مؤجلة",
+    "status_COMING_SOON": "قريباً",
+    "status_COMPLETED": "الدورة مكتملة"
   },
   "leads": {
     "title": "إدارة العملاء المحتملين",

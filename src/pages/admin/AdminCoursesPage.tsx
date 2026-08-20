@@ -33,6 +33,7 @@ interface Course {
   price: number
   rating: number
   studentCount: number
+  status: string
   groups: CourseGroup[]
 }
 
@@ -113,6 +114,13 @@ export default function AdminCoursesPage() {
     mutationFn: async (id: number) => apiClient.delete(`/api/admin/courses/${id}`),
     onSuccess: () => { invalidateAll(); toast.success(t('admin_courses.deleted')) },
     onError: () => toast.error(t('admin_courses.error_delete')),
+  })
+
+  const statusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) =>
+      apiClient.patch(`/api/admin/courses/${id}/status`, { status }),
+    onSuccess: () => { invalidateAll(); toast.success(t('admin_courses.status_updated')) },
+    onError: () => toast.error(t('admin_courses.status_error')),
   })
 
   // ── Modal helpers ──────────────────────────────────────────────────────────
@@ -297,6 +305,32 @@ export default function AdminCoursesPage() {
                       <span className="flex items-center gap-1 text-[10px] text-zinc-400 mt-0.5">
                         <Star size={10} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)}
                       </span>
+                    </td>
+
+                    {/* Groups Summary */}
+                    <td className="py-4 px-6 min-w-[160px]">
+                      {/* Status inline dropdown */}
+                      <select
+                        value={course.status || 'ACTIVE'}
+                        onChange={e => statusMutation.mutate({ id: course.id, status: e.target.value })}
+                        className={`w-full px-2.5 py-1.5 rounded-lg text-xs font-bold border focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer transition ${
+                          course.status === 'ACTIVE'
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            : course.status === 'PENDING'
+                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                            : course.status === 'COMING_SOON'
+                            ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                            : course.status === 'IN_PROGRESS'
+                            ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                            : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+                        } bg-zinc-900`}
+                      >
+                        <option value="ACTIVE">{t('admin_courses.status_ACTIVE')}</option>
+                        <option value="IN_PROGRESS">{t('admin_courses.status_IN_PROGRESS')}</option>
+                        <option value="PENDING">{t('admin_courses.status_PENDING')}</option>
+                        <option value="COMING_SOON">{t('admin_courses.status_COMING_SOON')}</option>
+                        <option value="COMPLETED">{t('admin_courses.status_COMPLETED')}</option>
+                      </select>
                     </td>
 
                     {/* Groups Summary */}

@@ -36,6 +36,7 @@ interface Course {
   price: number
   rating: number
   studentCount: number
+  status: string
   groups: CourseGroup[]
 }
 
@@ -241,6 +242,19 @@ export default function CourseDetailsPage() {
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">{course.title}</h1>
 
             <div className="flex flex-wrap gap-4 items-center text-sm text-zinc-400">
+              {course.status && course.status !== 'ACTIVE' && (
+                <span className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-bold ${
+                  course.status === 'PENDING'
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                    : course.status === 'COMING_SOON'
+                    ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                    : course.status === 'IN_PROGRESS'
+                    ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                    : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+                }`}>
+                  {t(`admin_courses.status_${course.status}`)}
+                </span>
+              )}
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 rounded-full">
                 <User size={14} className="text-brand-500" /> {t('course_details.instructor_label')}: <strong className="text-white ml-1">{course.instructorName}</strong>
               </span>
@@ -364,7 +378,27 @@ export default function CourseDetailsPage() {
                 </div>
               )}
 
-              {success ? (
+              {course.status && course.status !== 'ACTIVE' ? (
+                <div className="p-6 space-y-4 text-center">
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto border ${
+                    course.status === 'PENDING'
+                      ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                      : course.status === 'COMING_SOON'
+                      ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                      : course.status === 'IN_PROGRESS'
+                      ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                      : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+                  }`}>
+                    <AlertCircle size={28} />
+                  </div>
+                  <h3 className="font-bold text-lg text-white">
+                    {t(`admin_courses.status_${course.status}`)}
+                  </h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">
+                    {t(`course_details.status_banner_${course.status}`)}
+                  </p>
+                </div>
+              ) : success ? (
                 <div className="text-center py-8 space-y-4">
                   <div className="w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
                     <Check size={32} />

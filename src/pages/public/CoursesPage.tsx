@@ -17,6 +17,7 @@ interface Course {
   rating: number
   studentCount: number
   remainingSeats: number
+  status: string
   groups: { id: number; groupName: string; isAvailable: boolean }[]
 }
 
@@ -130,7 +131,19 @@ export default function CoursesPage() {
                       <span className="text-xs text-zinc-400">{course.instructorName}</span>
                     </div>
                     <div className="mb-4">
-                      {course.remainingSeats > 0 ? (
+                      {course.status && course.status !== 'ACTIVE' ? (
+                        <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full border ${
+                          course.status === 'PENDING'
+                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                            : course.status === 'COMING_SOON'
+                            ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                            : course.status === 'IN_PROGRESS'
+                            ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                            : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+                        }`}>
+                          {t(`admin_courses.status_${course.status}`)}
+                        </span>
+                      ) : course.remainingSeats > 0 ? (
                         <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full">
                           <Armchair size={11} />
                           {course.remainingSeats} {t('courses.remaining_seats')}
