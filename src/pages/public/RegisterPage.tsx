@@ -40,6 +40,8 @@ export default function RegisterPage() {
   })
 
   const [showPassword, setShowPassword] = useState(false)
+  const [otherGeneral, setOtherGeneral] = useState('')
+  const [otherSpecific, setOtherSpecific] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -59,6 +61,15 @@ export default function RegisterPage() {
       return
     }
 
+    if (formData.specialization === 'Other' && (!otherGeneral.trim() || !otherSpecific.trim())) {
+      toast.error(t('blacklist.validation_required'))
+      return
+    }
+
+    const finalSpecialization = formData.specialization === 'Other'
+      ? `${otherGeneral.trim()} - ${otherSpecific.trim()}`
+      : formData.specialization
+
     setLoading(true)
     try {
       // 1. Call Register endpoint
@@ -67,7 +78,7 @@ export default function RegisterPage() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        specialization: formData.specialization,
+        specialization: finalSpecialization,
         phone: formData.phone,
         whatsapp: formData.whatsapp || formData.phone,
         bio: formData.bio,
@@ -205,7 +216,13 @@ export default function RegisterPage() {
                   name="specialization"
                   required
                   value={formData.specialization}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e)
+                    if (e.target.value !== 'Other') {
+                      setOtherGeneral('')
+                      setOtherSpecific('')
+                    }
+                  }}
                   className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
                 >
                   <option value="" disabled>{t('register.select_specialization')}</option>
@@ -214,6 +231,38 @@ export default function RegisterPage() {
                   ))}
                 </select>
               </div>
+
+              {formData.specialization === 'Other' && (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                      {t('register.general_field', 'General Field')} *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={otherGeneral}
+                      onChange={(e) => setOtherGeneral(e.target.value)}
+                      placeholder={t('register.general_field_placeholder', 'e.g. Graphic')}
+                      className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                      {t('register.specific_field', 'Specific Field')} *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={otherSpecific}
+                      onChange={(e) => setOtherSpecific(e.target.value)}
+                      placeholder={t('register.specific_field_placeholder', 'e.g. Graphic Design')}
+                      className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
+                    />
+                  </div>
+                </>
+              )}
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">{t('register.phone')}</label>
