@@ -2,23 +2,12 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Eye, EyeOff, User, Mail, Lock, Phone, Briefcase, FileText, Globe, Code, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, User, Briefcase, ArrowRight } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import { apiClient } from '../../api/client'
 import { useAuthStore } from '../../store/authStore'
 import logoImg from '../../assets/FinalLogo.png'
-
-const SPECIALIZATIONS = [
-  'Frontend Developer',
-  'Backend Developer',
-  'Fullstack Developer',
-  'Mobile Developer',
-  'UI/UX Designer',
-  'Data Scientist / AI',
-  'DevOps / Cloud',
-  'Cybersecurity',
-  'Other'
-]
+import { GENERAL_FIELDS, SPECIALIZATION_HIERARCHY } from '../../constants/specializations'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -31,7 +20,8 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    specialization: '',
+    generalSpecialization: '',
+    specificSpecialization: '',
     phone: '',
     whatsapp: '',
     bio: '',
@@ -48,36 +38,55 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const handleGeneralChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    setFormData((prev) => ({
+      ...prev,
+      generalSpecialization: value,
+      specificSpecialization: '', // Reset specific when general changes
+    }))
+    setOtherGeneral('')
+    setOtherSpecific('')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error(t('register.password_mismatch'))
+      toast.error(t('register.password_mismatch', 'Passwords do not match'))
       return
     }
 
-    if (!formData.fullName || !formData.username || !formData.email || !formData.password || !formData.specialization || !formData.phone || !formData.bio) {
-      toast.error(t('blacklist.validation_required'))
+    if (!formData.fullName || !formData.username || !formData.email || !formData.password || !formData.generalSpecialization || !formData.specificSpecialization || !formData.phone || !formData.bio) {
+      toast.error(t('blacklist.validation_required', 'Please fill in all required fields'))
       return
     }
 
-    if (formData.specialization === 'Other' && (!otherGeneral.trim() || !otherSpecific.trim())) {
-      toast.error(t('blacklist.validation_required'))
+    if (formData.specificSpecialization === 'Other' && (!otherSpecific.trim() || (formData.generalSpecialization === 'Other' && !otherGeneral.trim()))) {
+      toast.error(t('blacklist.validation_required', 'Please specify your custom specialization'))
       return
     }
 
-    const finalSpecialization = formData.specialization === 'Other'
-      ? `${otherGeneral.trim()} - ${otherSpecific.trim()}`
-      : formData.specialization
+    const genSpec = formData.generalSpecialization === 'Other' && otherGeneral.trim()
+      ? otherGeneral.trim()
+      : formData.generalSpecialization
+
+    const specSpec = formData.specificSpecialization === 'Other' && otherSpecific.trim()
+      ? otherSpecific.trim()
+      : formData.specificSpecialization
+
+    const finalSpecialization = `${genSpec} → ${specSpec}`
 
     setLoading(true)
     try {
       // 1. Call Register endpoint
-      const response = await apiClient.post('/api/auth/register', {
+      await apiClient.post('/api/auth/register', {
         fullName: formData.fullName,
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        generalSpecialization: genSpec,
+        specificSpecialization: specSpec,
         specialization: finalSpecialization,
         phone: formData.phone,
         whatsapp: formData.whatsapp || formData.phone,
@@ -86,7 +95,7 @@ export default function RegisterPage() {
         portfolioUrl: formData.portfolioUrl || null,
       })
 
-      toast.success(t('register.success'))
+      toast.success(t('register.success', 'Registration successful!'))
 
       // 2. Automatically log in user after registration
       const loginResp = await apiClient.post('/api/auth/login', {
@@ -100,17 +109,21 @@ export default function RegisterPage() {
       navigate('/profile')
     } catch (err: any) {
       console.error(err)
-      const message = err.response?.data?.message || err.message || t('blacklist.error_add')
+      const message = err.response?.data?.message || err.message || t('blacklist.error_add', 'Registration failed')
       toast.error(message)
     } finally {
       setLoading(false)
     }
   }
 
+  const availableSpecifics = formData.generalSpecialization
+    ? SPECIALIZATION_HIERARCHY[formData.generalSpecialization] || ['Other']
+    : []
+
   return (
     <div className="min-h-screen bg-black text-white pt-24 pb-16 px-4">
       <Navbar />
-      
+
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <img src={logoImg} alt="HakSpace" className="h-14 w-auto object-contain mx-auto mb-4" />
@@ -119,7 +132,7 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
-          
+
           {/* Section 1: Account Info */}
           <div>
             <h2 className="text-lg font-bold text-brand-400 mb-4 pb-2 border-b border-zinc-800 flex items-center gap-2">
@@ -210,58 +223,79 @@ export default function RegisterPage() {
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">{t('register.specialization')}</label>
+              {/* General Specialization Dropdown */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                  General Specialization *
+                </label>
                 <select
-                  name="specialization"
+                  name="generalSpecialization"
                   required
-                  value={formData.specialization}
-                  onChange={(e) => {
-                    handleChange(e)
-                    if (e.target.value !== 'Other') {
-                      setOtherGeneral('')
-                      setOtherSpecific('')
-                    }
-                  }}
+                  value={formData.generalSpecialization}
+                  onChange={handleGeneralChange}
                   className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
                 >
-                  <option value="" disabled>{t('register.select_specialization')}</option>
-                  {SPECIALIZATIONS.map((spec) => (
+                  <option value="" disabled>[ Select General Specialization ▼ ]</option>
+                  {GENERAL_FIELDS.map((field) => (
+                    <option key={field} value={field}>{field}</option>
+                  ))}
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {/* Specific Specialization Dropdown */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                  Specific Specialization *
+                </label>
+                <select
+                  name="specificSpecialization"
+                  required
+                  disabled={!formData.generalSpecialization}
+                  value={formData.specificSpecialization}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm ${
+                    !formData.generalSpecialization ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <option value="" disabled>[ Select Specific Specialization ▼ ]</option>
+                  {availableSpecifics.map((spec) => (
                     <option key={spec} value={spec}>{spec}</option>
                   ))}
                 </select>
               </div>
 
-              {formData.specialization === 'Other' && (
-                <>
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                      {t('register.general_field', 'General Field')} *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={otherGeneral}
-                      onChange={(e) => setOtherGeneral(e.target.value)}
-                      placeholder={t('register.general_field_placeholder', 'e.g. Graphic')}
-                      className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
-                    />
-                  </div>
+              {/* Custom 'Other' fields */}
+              {formData.generalSpecialization === 'Other' && (
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                    Custom General Field *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={otherGeneral}
+                    onChange={(e) => setOtherGeneral(e.target.value)}
+                    placeholder="e.g. Data Science"
+                    className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
+                  />
+                </div>
+              )}
 
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                      {t('register.specific_field', 'Specific Field')} *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={otherSpecific}
-                      onChange={(e) => setOtherSpecific(e.target.value)}
-                      placeholder={t('register.specific_field_placeholder', 'e.g. Graphic Design')}
-                      className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
-                    />
-                  </div>
-                </>
+              {formData.specificSpecialization === 'Other' && (
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                    Custom Specific Field *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={otherSpecific}
+                    onChange={(e) => setOtherSpecific(e.target.value)}
+                    placeholder="e.g. AI Prompt Engineering"
+                    className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
+                  />
+                </div>
               )}
 
               <div>

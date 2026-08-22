@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { apiClient } from '../../api/client'
 import { toast } from 'react-toastify'
 import { GraduationCap, Plus, Edit2, Trash2, X, Linkedin, Github, Globe, ExternalLink } from 'lucide-react'
+import { GENERAL_FIELDS, SPECIALIZATION_HIERARCHY } from '../../constants/specializations'
 
 interface InstructorProfile {
   id: number
@@ -46,7 +47,8 @@ export default function AdminInstructorsPage() {
   const [jobTitle, setJobTitle] = useState('')
   const [shortBio, setShortBio] = useState('')
   const [bio, setBio] = useState('')
-  const [specialization, setSpecialization] = useState('')
+  const [generalSpecialization, setGeneralSpecialization] = useState('')
+  const [specificSpecialization, setSpecificSpecialization] = useState('')
   const [yearsExperience, setYearsExperience] = useState(0)
   const [profileImageUrl, setProfileImageUrl] = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
@@ -80,12 +82,23 @@ export default function AdminInstructorsPage() {
     } catch { /* ignore */ }
   }
 
+  const parseSpecialization = (spec?: string) => {
+    if (!spec) return { general: '', specific: '' }
+    const parts = spec.split(' → ')
+    if (parts.length === 2) {
+      return { general: parts[0].trim(), specific: parts[1].trim() }
+    }
+    return { general: '', specific: spec }
+  }
+
   const openEditModal = (instructor: InstructorProfile) => {
     setEditingInstructor(instructor)
     setJobTitle(instructor.jobTitle || '')
     setShortBio(instructor.shortBio || '')
     setBio(instructor.bio || '')
-    setSpecialization(instructor.specialization || '')
+    const parsed = parseSpecialization(instructor.specialization)
+    setGeneralSpecialization(parsed.general)
+    setSpecificSpecialization(parsed.specific)
     setYearsExperience(instructor.yearsExperience || 0)
     setProfileImageUrl(instructor.profileImageUrl || '')
     setLinkedinUrl(instructor.linkedinUrl || '')
@@ -96,13 +109,22 @@ export default function AdminInstructorsPage() {
     setIsModalOpen(true)
   }
 
+  const getCombinedSpecialization = () => {
+    if (!generalSpecialization && !specificSpecialization) return ''
+    if (!generalSpecialization) return specificSpecialization
+    if (!specificSpecialization) return generalSpecialization
+    return `${generalSpecialization} → ${specificSpecialization}`
+  }
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingInstructor) return
     setSaving(true)
     try {
       await apiClient.put(`/api/admin/instructors/${editingInstructor.userId}`, {
-        jobTitle, shortBio, bio, specialization, yearsExperience,
+        jobTitle, shortBio, bio,
+        specialization: getCombinedSpecialization(),
+        yearsExperience,
         profileImageUrl, linkedinUrl, githubUrl, facebookUrl, twitterUrl, websiteUrl
       })
       toast.success('Instructor profile updated!')
@@ -120,7 +142,9 @@ export default function AdminInstructorsPage() {
     setSaving(true)
     try {
       await apiClient.post(`/api/admin/instructors/${selectedUserId}/promote`, {
-        jobTitle, shortBio, bio, specialization, yearsExperience,
+        jobTitle, shortBio, bio,
+        specialization: getCombinedSpecialization(),
+        yearsExperience,
         profileImageUrl, linkedinUrl, githubUrl, facebookUrl, twitterUrl, websiteUrl
       })
       toast.success('User promoted to Instructor!')
@@ -146,7 +170,8 @@ export default function AdminInstructorsPage() {
   }
 
   const resetForm = () => {
-    setJobTitle(''); setShortBio(''); setBio(''); setSpecialization('')
+    setJobTitle(''); setShortBio(''); setBio('')
+    setGeneralSpecialization(''); setSpecificSpecialization('')
     setYearsExperience(0); setProfileImageUrl(''); setLinkedinUrl('')
     setGithubUrl(''); setFacebookUrl(''); setTwitterUrl(''); setWebsiteUrl('')
     setSelectedUserId('')
@@ -222,7 +247,7 @@ export default function AdminInstructorsPage() {
                 <p className="text-zinc-400 text-xs leading-relaxed line-clamp-2">{inst.shortBio}</p>
               )}
 
-              {/* Stats */}
+              {/* Stats & Specialization */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {inst.specialization && (
                   <span className="col-span-2 px-2.5 py-1 bg-brand-500/10 border border-brand-500/20 text-brand-400 rounded-lg font-semibold text-[11px]">
@@ -285,7 +310,8 @@ export default function AdminInstructorsPage() {
                 jobTitle={jobTitle} setJobTitle={setJobTitle}
                 shortBio={shortBio} setShortBio={setShortBio}
                 bio={bio} setBio={setBio}
-                specialization={specialization} setSpecialization={setSpecialization}
+                generalSpecialization={generalSpecialization} setGeneralSpecialization={setGeneralSpecialization}
+                specificSpecialization={specificSpecialization} setSpecificSpecialization={setSpecificSpecialization}
                 yearsExperience={yearsExperience} setYearsExperience={setYearsExperience}
                 profileImageUrl={profileImageUrl} setProfileImageUrl={setProfileImageUrl}
                 linkedinUrl={linkedinUrl} setLinkedinUrl={setLinkedinUrl}
@@ -318,7 +344,8 @@ export default function AdminInstructorsPage() {
                 jobTitle={jobTitle} setJobTitle={setJobTitle}
                 shortBio={shortBio} setShortBio={setShortBio}
                 bio={bio} setBio={setBio}
-                specialization={specialization} setSpecialization={setSpecialization}
+                generalSpecialization={generalSpecialization} setGeneralSpecialization={setGeneralSpecialization}
+                specificSpecialization={specificSpecialization} setSpecificSpecialization={setSpecificSpecialization}
                 yearsExperience={yearsExperience} setYearsExperience={setYearsExperience}
                 profileImageUrl={profileImageUrl} setProfileImageUrl={setProfileImageUrl}
                 linkedinUrl={linkedinUrl} setLinkedinUrl={setLinkedinUrl}
@@ -341,15 +368,23 @@ export default function AdminInstructorsPage() {
   )
 }
 
-/* Shared form fields component */
-function ProfileFields({ jobTitle, setJobTitle, shortBio, setShortBio, bio, setBio,
-  specialization, setSpecialization, yearsExperience, setYearsExperience,
+/* Shared form fields component with two-level dependent specialization dropdowns */
+function ProfileFields({
+  jobTitle, setJobTitle, shortBio, setShortBio, bio, setBio,
+  generalSpecialization, setGeneralSpecialization,
+  specificSpecialization, setSpecificSpecialization,
+  yearsExperience, setYearsExperience,
   profileImageUrl, setProfileImageUrl, linkedinUrl, setLinkedinUrl,
   githubUrl, setGithubUrl, facebookUrl, setFacebookUrl,
   twitterUrl, setTwitterUrl, websiteUrl, setWebsiteUrl
 }: any) {
   const input = "w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-sm"
   const label = "block font-semibold text-zinc-400 mb-1"
+
+  const availableSpecifics = generalSpecialization
+    ? SPECIALIZATION_HIERARCHY[generalSpecialization] || ['Other']
+    : []
+
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
@@ -362,10 +397,41 @@ function ProfileFields({ jobTitle, setJobTitle, shortBio, setShortBio, bio, setB
           <input className={input} type="number" min="0" value={yearsExperience} onChange={e => setYearsExperience(Number(e.target.value))} />
         </div>
       </div>
-      <div>
-        <label className={label}>Specialization</label>
-        <input className={input} placeholder="e.g. Backend Development, Spring Boot" value={specialization} onChange={e => setSpecialization(e.target.value)} />
+
+      {/* Two-level dependent specialization dropdowns */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={label}>General Specialization</label>
+          <select
+            className={input}
+            value={generalSpecialization}
+            onChange={e => {
+              setGeneralSpecialization(e.target.value)
+              setSpecificSpecialization('')
+            }}
+          >
+            <option value="">[ Select General Specialization ▼ ]</option>
+            {GENERAL_FIELDS.map(field => (
+              <option key={field} value={field}>{field}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className={label}>Specific Specialization</label>
+          <select
+            className={`${input} ${!generalSpecialization ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!generalSpecialization}
+            value={specificSpecialization}
+            onChange={e => setSpecificSpecialization(e.target.value)}
+          >
+            <option value="">[ Select Specific Specialization ▼ ]</option>
+            {availableSpecifics.map(spec => (
+              <option key={spec} value={spec}>{spec}</option>
+            ))}
+          </select>
+        </div>
       </div>
+
       <div>
         <label className={label}>Short Bio (Max 500 chars)</label>
         <textarea className={`${input} resize-none`} rows={2} placeholder="Brief professional summary..." value={shortBio} onChange={e => setShortBio(e.target.value)} maxLength={500} />

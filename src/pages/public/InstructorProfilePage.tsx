@@ -153,10 +153,22 @@ export default function InstructorProfilePage() {
               )}
 
               {instructor.specialization && (
-                <p className="text-zinc-400 text-sm flex items-center gap-2">
-                  <Briefcase size={14} className="text-zinc-500" />
-                  {instructor.specialization}
-                </p>
+                <div className="flex items-center gap-2 text-zinc-300 text-sm">
+                  <Briefcase size={14} className="text-brand-400" />
+                  {instructor.specialization.includes(' → ') ? (
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="px-2.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-semibold text-zinc-300">
+                        {instructor.specialization.split(' → ')[0]}
+                      </span>
+                      <span className="text-brand-400 font-bold text-xs">→</span>
+                      <span className="px-2.5 py-0.5 bg-brand-500/10 border border-brand-500/30 text-brand-400 rounded-lg text-xs font-semibold">
+                        {instructor.specialization.split(' → ')[1]}
+                      </span>
+                    </div>
+                  ) : (
+                    <span>{instructor.specialization}</span>
+                  )}
+                </div>
               )}
 
               {instructor.shortBio && (
