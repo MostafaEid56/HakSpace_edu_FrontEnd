@@ -14,6 +14,8 @@ import VerifyCertificatePage from './pages/public/VerifyCertificatePage'
 import WorkshopsPage from './pages/public/WorkshopsPage'
 import WorkshopDetailsPage from './pages/public/WorkshopDetailsPage'
 import AdminWorkshopsPage from './pages/admin/AdminWorkshopsPage'
+import AdminInstructorsPage from './pages/admin/AdminInstructorsPage'
+import InstructorProfilePage from './pages/public/InstructorProfilePage'
 import WhatsAppButton from './components/WhatsAppButton'
 import AdminLayout from './components/AdminLayout'
 
@@ -31,10 +33,12 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/:username" element={<ProfilePage />} />
+        <Route path="/instructors/:username" element={<InstructorProfilePage />} />
         <Route path="/admin/dashboard" element={<AdminLayout><DashboardPage /></AdminLayout>} />
         <Route path="/admin/community" element={<AdminLayout><AdminCommunityPage /></AdminLayout>} />
         <Route path="/admin/courses" element={<AdminLayout><AdminCoursesPage /></AdminLayout>} />
         <Route path="/admin/workshops" element={<AdminLayout><AdminWorkshopsPage /></AdminLayout>} />
+        <Route path="/admin/instructors" element={<AdminLayout><AdminInstructorsPage /></AdminLayout>} />
         <Route path="/admin/leads" element={<AdminLayout><LeadsPage /></AdminLayout>} />
         <Route path="/admin/blacklist" element={<AdminLayout><AdminBlacklistPage /></AdminLayout>} />
       </Routes>

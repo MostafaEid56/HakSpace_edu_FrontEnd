@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../../api/client'
@@ -39,6 +39,7 @@ interface Course {
   installmentAmount?: number
   installmentFrequency?: string
   numberOfInstallments?: number
+  instructorUsername?: string
   groups: CourseGroup[]
 }
 
@@ -80,6 +81,8 @@ export default function AdminCoursesPage() {
   const [price, setPrice] = useState<number>(0)
   const [rating, setRating] = useState<number>(0)
   const [studentCount, setStudentCount] = useState<number>(0)
+  const [instructorUsername, setInstructorUsername] = useState('')
+  const [instructorsList, setInstructorsList] = useState<{ id: number; fullName: string; username: string }[]>([])
 
   // Payment Plan fields
   const [paymentType, setPaymentType] = useState<'FULL_PAYMENT' | 'INSTALLMENT'>('FULL_PAYMENT')
@@ -97,6 +100,12 @@ export default function AdminCoursesPage() {
     queryKey: ['adminCourses'],
     queryFn: fetchCourses,
   })
+
+  useEffect(() => {
+    apiClient.get('/api/admin/instructors')
+      .then(res => setInstructorsList(res.data))
+      .catch(() => {})
+  }, [])
 
   const invalidateAll = () => {
     queryClient.invalidateQueries({ queryKey: ['adminCourses'] })
@@ -146,6 +155,7 @@ export default function AdminCoursesPage() {
       setCourseMaterialsLink(course.courseMaterialsLink || '')
       setDuration(course.duration)
       setInstructorName(course.instructorName)
+      setInstructorUsername(course.instructorUsername || '')
       setPrice(course.price)
       setRating(course.rating)
       setStudentCount(course.studentCount)
@@ -168,6 +178,7 @@ export default function AdminCoursesPage() {
       setCourseMaterialsLink('')
       setDuration('3 Months')
       setInstructorName('')
+      setInstructorUsername('')
       setPrice(199)
       setRating(4.8)
       setStudentCount(0)
@@ -228,7 +239,9 @@ export default function AdminCoursesPage() {
     const payload = {
       title, description, imageUrl, courseMaterialsLink: courseMaterialsLink || null,
       duration,
-      instructorName, price: Number(price),
+      instructorName,
+      instructorUsername,
+      price: Number(price),
       rating: Number(rating), studentCount: Number(studentCount),
       paymentType,
       downPayment: paymentType === 'INSTALLMENT' ? Number(downPayment) : null,
@@ -303,6 +316,7 @@ export default function AdminCoursesPage() {
                   <th className="py-4 px-6">{t('admin_courses.col_details')}</th>
                   <th className="py-4 px-6">{t('admin_courses.col_instructor')}</th>
                   <th className="py-4 px-6">{t('admin_courses.col_price')}</th>
+                  <th className="py-4 px-6">Status</th>
                   <th className="py-4 px-6">{t('admin_courses.col_groups')}</th>
                   <th className="py-4 px-6 text-right">{t('admin_courses.col_actions')}</th>
                 </tr>
@@ -334,14 +348,14 @@ export default function AdminCoursesPage() {
 
                     {/* Price & Rating */}
                     <td className="py-4 px-6">
-                      <p className="font-bold text-white text-base">{course.price.toLocaleString()} {t('common.currency')}</p>
+                      <p className="font-bold text-white text-base">{(course.price ?? 0).toLocaleString()} {t('common.currency')}</p>
                       {course.paymentType === 'INSTALLMENT' && (
                         <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400">
                           {t('admin_courses.installment_plan')}
                         </span>
                       )}
                       <span className="flex items-center gap-1 text-[10px] text-zinc-400 mt-0.5">
-                        <Star size={10} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)}
+                        <Star size={10} className="text-yellow-400 fill-yellow-400" /> {(course.rating ?? 5.0).toFixed(1)}
                       </span>
                     </td>
 
@@ -458,11 +472,33 @@ export default function AdminCoursesPage() {
 
                   <div>
                     <label className="block text-xs font-semibold text-zinc-400 mb-1">{t('admin_courses.field_instructor')}</label>
-                    <input
-                      type="text" required placeholder={t('admin_courses.field_instructor_placeholder')}
-                      className="w-full px-3.5 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                      value={instructorName} onChange={e => setInstructorName(e.target.value)}
-                    />
+                    {instructorsList.length > 0 ? (
+                      <select
+                        className="w-full px-3.5 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                        value={instructorUsername}
+                        onChange={e => {
+                          const username = e.target.value
+                          setInstructorUsername(username)
+                          const selectedInst = instructorsList.find(i => i.username === username)
+                          if (selectedInst) {
+                            setInstructorName(selectedInst.fullName)
+                          }
+                        }}
+                      >
+                        <option value="">-- Select Instructor --</option>
+                        {instructorsList.map(inst => (
+                          <option key={inst.id} value={inst.username}>
+                            {inst.fullName} (@{inst.username})
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text" required placeholder={t('admin_courses.field_instructor_placeholder')}
+                        className="w-full px-3.5 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                        value={instructorName} onChange={e => setInstructorName(e.target.value)}
+                      />
+                    )}
                   </div>
 
                   <div>

@@ -12,6 +12,7 @@ import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import AdminCourseStudentsSection from '../../components/AdminCourseStudentsSection'
 import { formatDuration, formatFrequency } from '../../utils/duration'
+import InstructorBadge from '../../components/InstructorBadge'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -33,6 +34,7 @@ interface Course {
   courseMaterialsLink?: string
   duration: string
   instructorName: string
+  instructorUsername?: string
   price: number
   rating: number
   studentCount: number
@@ -261,15 +263,43 @@ export default function CourseDetailsPage() {
                 </span>
               )}
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 rounded-full">
-                <User size={14} className="text-brand-500" /> {t('course_details.instructor_label')}: <strong className="text-white ml-1">{course.instructorName}</strong>
-              </span>
-              <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 rounded-full">
                 <Clock size={14} className="text-brand-500" /> {formatDuration(course.duration, i18n.language)}
               </span>
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 rounded-full">
-                <Star size={14} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)} / 5.0
+                <Star size={14} className="text-yellow-400 fill-yellow-400" /> {(course.rating ?? 5.0).toFixed(1)} / 5.0
               </span>
             </div>
+
+            {/* Instructor Card Block */}
+            {course.instructorName && (
+              <div className="p-5 bg-gradient-to-r from-zinc-900 via-zinc-900/80 to-zinc-950 border border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-brand-600/20 border border-brand-500/30 flex items-center justify-center font-black text-brand-400 text-lg flex-shrink-0">
+                    {course.instructorName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold text-white text-base">{course.instructorName}</h4>
+                      <InstructorBadge size="sm" />
+                    </div>
+                    <p className="text-xs text-zinc-400 mt-0.5">Course Lead & Senior Instructor</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const targetPath = course.instructorUsername
+                      ? `/instructors/${course.instructorUsername}`
+                      : `/instructors/${encodeURIComponent(course.instructorName)}`
+                    navigate(targetPath)
+                  }}
+                  className="px-4 py-2 bg-brand-600/20 hover:bg-brand-600/30 border border-brand-500/40 text-brand-300 hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 group self-end sm:self-auto"
+                >
+                  <span>View Instructor Profile</span>
+                  <ExternalLink size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
+            )}
 
             <div className="relative rounded-3xl overflow-hidden aspect-video max-h-[400px] border border-zinc-800">
               <img

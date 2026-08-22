@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import { Search, Filter, MessageSquare, ExternalLink, FileText, Globe, User, BookOpen, CheckCircle, Clock, ShieldCheck } from 'lucide-react'
 import { apiClient } from '../../api/client'
 import { MemberBadge, BadgeLevel } from '../../components/MemberBadge'
+import InstructorBadge from '../../components/InstructorBadge'
 
 interface MemberCourse {
   courseId: number
@@ -26,6 +27,7 @@ interface CommunityMember {
   portfolioUrl?: string
   joinedDate: string
   badge?: BadgeLevel
+  isInstructor?: boolean
   courses: MemberCourse[]
 }
 
@@ -169,6 +171,41 @@ export default function AdminCommunityPage() {
                       {member.specialization}
                     </span>
                   )}
+                </div>
+
+                {/* Role / Instructor status toggle */}
+                <div className="flex items-center justify-between gap-2 p-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-zinc-400 font-bold uppercase">Role:</span>
+                    {member.isInstructor ? (
+                      <InstructorBadge size="sm" />
+                    ) : (
+                      <span className="text-[11px] font-bold text-zinc-400 px-2 py-0.5 bg-zinc-800 rounded-full border border-zinc-700">Regular User</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={async () => {
+                      try {
+                        if (member.isInstructor) {
+                          await apiClient.delete(`/api/admin/instructors/${member.id}/demote`)
+                          toast.success('Removed instructor role')
+                        } else {
+                          await apiClient.post(`/api/admin/instructors/${member.id}/promote`)
+                          toast.success('Promoted user to Instructor!')
+                        }
+                        fetchCommunityMembers()
+                      } catch {
+                        toast.error('Failed to change role')
+                      }
+                    }}
+                    className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border transition ${
+                      member.isInstructor
+                        ? 'bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20'
+                        : 'bg-brand-500/10 border-brand-500/30 text-brand-300 hover:bg-brand-500/20'
+                    }`}
+                  >
+                    {member.isInstructor ? 'Demote' : 'Promote to Instructor'}
+                  </button>
                 </div>
 
                 <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-900/80">

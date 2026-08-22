@@ -131,7 +131,7 @@ export default function CoursesPage() {
                       <Clock size={12} className="text-brand-500" /> {formatDuration(course.duration, i18n.language)}
                     </span>
                     <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-zinc-300 flex items-center gap-1">
-                      <Star size={12} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)}
+                      <Star size={12} className="text-yellow-400 fill-yellow-400" /> {(course.rating ?? 5.0).toFixed(1)}
                     </span>
                   </div>
                 </div>
