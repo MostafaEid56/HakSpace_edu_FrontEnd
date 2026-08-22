@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import AdminCourseStudentsSection from '../../components/AdminCourseStudentsSection'
-import { formatDuration } from '../../utils/duration'
+import { formatDuration, formatFrequency } from '../../utils/duration'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -37,6 +37,11 @@ interface Course {
   rating: number
   studentCount: number
   status: string
+  paymentType?: 'FULL_PAYMENT' | 'INSTALLMENT'
+  downPayment?: number
+  installmentAmount?: number
+  installmentFrequency?: string
+  numberOfInstallments?: number
   groups: CourseGroup[]
 }
 
@@ -360,12 +365,37 @@ export default function CourseDetailsPage() {
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl" />
 
               {/* Price */}
-              <div className="mb-6 border-b border-zinc-800 pb-4">
+              <div className="mb-6 border-b border-zinc-800 pb-4 space-y-3">
                 <span className="text-zinc-400 text-sm font-semibold uppercase tracking-wider">{t('course_details.sidebar_fees')}</span>
-                <div className="flex items-baseline gap-2 mt-1">
+                <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-extrabold">{course.price} {t('common.currency')}</span>
-                  <span className="text-zinc-500 text-xs">{t('course_details.sidebar_one_time')}</span>
+                  {course.paymentType !== 'INSTALLMENT' && (
+                    <span className="text-zinc-500 text-xs">{t('course_details.sidebar_one_time')}</span>
+                  )}
                 </div>
+
+                {course.paymentType === 'INSTALLMENT' && (
+                  <div className="p-4 bg-brand-500/10 border border-brand-500/30 rounded-2xl space-y-2 mt-3">
+                    <span className="px-2.5 py-0.5 bg-brand-500/20 text-brand-400 text-[10px] font-black uppercase tracking-wider rounded-full border border-brand-500/40">
+                      {t('course_details.installment_plan_badge')}
+                    </span>
+
+                    <div className="space-y-1 text-xs text-zinc-300 pt-1">
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">{t('course_details.installment_down_payment')}</span>
+                        <strong className="text-white font-bold">{course.downPayment} {t('common.currency')}</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">{t('course_details.installment_amount')}</span>
+                        <strong className="text-white font-bold">{course.installmentAmount} {t('common.currency')} / {formatFrequency(course.installmentFrequency, i18n.language)}</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">{t('course_details.installment_duration')}</span>
+                        <strong className="text-white font-bold">{formatFrequency(`${course.numberOfInstallments} ${course.installmentFrequency || 'months'}`, i18n.language)}</strong>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Selected group indicator */}

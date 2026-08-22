@@ -44,3 +44,40 @@ export function formatDuration(duration: string | undefined | null, lang: string
 
   return duration
 }
+
+/**
+ * Utility to format installment frequency and duration into localized text.
+ */
+export function formatFrequency(freq: string | undefined | null, lang: string): string {
+  if (!freq) return lang === 'ar' ? 'شهرياً' : 'Monthly'
+
+  const clean = freq.trim()
+  const isArabic = lang === 'ar'
+
+  if (/^monthly$/i.test(clean)) {
+    return isArabic ? 'شهرياً' : 'Monthly'
+  }
+  if (/^weekly$/i.test(clean)) {
+    return isArabic ? 'أسبوعياً' : 'Weekly'
+  }
+
+  // Check if freq is pure number or number + unit
+  const numMatch = clean.match(/(\d+(?:\.\d+)?)\s*(.*)/)
+  if (numMatch) {
+    const num = parseFloat(numMatch[1])
+    const unit = numMatch[2].toLowerCase()
+
+    if (!unit || unit.includes('month') || unit.includes('شهر')) {
+      if (isArabic) {
+        if (num === 1) return 'شهر واحد'
+        if (num === 2) return 'شهران'
+        if (num > 2 && num <= 10) return `${num} أشهر`
+        return `${num} شهر`
+      } else {
+        return num === 1 ? '1 Month' : `${num} Months`
+      }
+    }
+  }
+
+  return clean
+}

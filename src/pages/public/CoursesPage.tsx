@@ -4,7 +4,7 @@ import { apiClient } from '../../api/client'
 import { Star, Clock, Users, ArrowRight, Armchair } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
-import { formatDuration } from '../../utils/duration'
+import { formatDuration, formatFrequency } from '../../utils/duration'
 
 interface Course {
   id: number
@@ -18,6 +18,11 @@ interface Course {
   studentCount: number
   remainingSeats: number
   status: string
+  paymentType?: 'FULL_PAYMENT' | 'INSTALLMENT'
+  downPayment?: number
+  installmentAmount?: number
+  installmentFrequency?: string
+  numberOfInstallments?: number
   groups: { id: number; groupName: string; isAvailable: boolean }[]
 }
 
@@ -174,7 +179,19 @@ export default function CoursesPage() {
                   <div className="flex justify-between items-center pt-4 border-t border-zinc-800/80">
                     <div className="flex flex-col">
                       <span className="text-zinc-500 text-xs uppercase tracking-wider font-semibold">{t('courses.price')}</span>
-                      <span className="text-2xl font-bold">{course.price} {t('common.currency')}</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold">{course.price} {t('common.currency')}</span>
+                      </div>
+                      {course.paymentType === 'INSTALLMENT' && (
+                        <span className="text-[11px] font-semibold text-brand-400">
+                          {t('course_details.installment_card_summary', {
+                            downPayment: course.downPayment,
+                            currency: t('common.currency'),
+                            installmentAmount: course.installmentAmount,
+                            frequency: formatFrequency(course.installmentFrequency, i18n.language)
+                          })}
+                        </span>
+                      )}
                     </div>
                     <button className="px-5 py-2.5 bg-zinc-800 group-hover:bg-brand-600 group-hover:text-white rounded-xl text-sm font-semibold transition-colors duration-300">
                       {t('courses.view_details')}

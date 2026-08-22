@@ -34,6 +34,11 @@ interface Course {
   rating: number
   studentCount: number
   status: string
+  paymentType?: 'FULL_PAYMENT' | 'INSTALLMENT'
+  downPayment?: number
+  installmentAmount?: number
+  installmentFrequency?: string
+  numberOfInstallments?: number
   groups: CourseGroup[]
 }
 
@@ -75,6 +80,13 @@ export default function AdminCoursesPage() {
   const [price, setPrice] = useState<number>(0)
   const [rating, setRating] = useState<number>(0)
   const [studentCount, setStudentCount] = useState<number>(0)
+
+  // Payment Plan fields
+  const [paymentType, setPaymentType] = useState<'FULL_PAYMENT' | 'INSTALLMENT'>('FULL_PAYMENT')
+  const [downPayment, setDownPayment] = useState<number>(0)
+  const [installmentAmount, setInstallmentAmount] = useState<number>(0)
+  const [installmentFrequency, setInstallmentFrequency] = useState('Monthly')
+  const [numberOfInstallments, setNumberOfInstallments] = useState<number>(1)
 
   // Groups draft list
   const [groups, setGroups] = useState<GroupDraft[]>([])
@@ -137,6 +149,11 @@ export default function AdminCoursesPage() {
       setPrice(course.price)
       setRating(course.rating)
       setStudentCount(course.studentCount)
+      setPaymentType(course.paymentType || 'FULL_PAYMENT')
+      setDownPayment(course.downPayment || 0)
+      setInstallmentAmount(course.installmentAmount || 0)
+      setInstallmentFrequency(course.installmentFrequency || 'Monthly')
+      setNumberOfInstallments(course.numberOfInstallments || 1)
       setGroups(course.groups.map(g => ({
         id: g.id,
         groupName: g.groupName,
@@ -154,6 +171,11 @@ export default function AdminCoursesPage() {
       setPrice(199)
       setRating(4.8)
       setStudentCount(0)
+      setPaymentType('FULL_PAYMENT')
+      setDownPayment(0)
+      setInstallmentAmount(0)
+      setInstallmentFrequency('Monthly')
+      setNumberOfInstallments(1)
       setGroups([])
     }
     setExpandedGroupIdx(null)
@@ -191,6 +213,12 @@ export default function AdminCoursesPage() {
       toast.error(t('admin_courses.validation_materials_url'))
       return
     }
+    if (paymentType === 'INSTALLMENT') {
+      if (downPayment < 0 || installmentAmount <= 0 || numberOfInstallments < 1 || !installmentFrequency.trim()) {
+        toast.error(t('admin_courses.validation_installment'))
+        return
+      }
+    }
     for (const g of groups) {
       if (!g.groupName.trim()) { toast.error(t('admin_courses.validation_group_name')); return }
       if (!g.schedule.trim()) { toast.error(t('admin_courses.validation_group_schedule')); return }
@@ -202,6 +230,11 @@ export default function AdminCoursesPage() {
       duration,
       instructorName, price: Number(price),
       rating: Number(rating), studentCount: Number(studentCount),
+      paymentType,
+      downPayment: paymentType === 'INSTALLMENT' ? Number(downPayment) : null,
+      installmentAmount: paymentType === 'INSTALLMENT' ? Number(installmentAmount) : null,
+      installmentFrequency: paymentType === 'INSTALLMENT' ? installmentFrequency : null,
+      numberOfInstallments: paymentType === 'INSTALLMENT' ? Number(numberOfInstallments) : null,
       groups,
     }
 
@@ -302,6 +335,11 @@ export default function AdminCoursesPage() {
                     {/* Price & Rating */}
                     <td className="py-4 px-6">
                       <p className="font-bold text-white text-base">{course.price.toLocaleString()} {t('common.currency')}</p>
+                      {course.paymentType === 'INSTALLMENT' && (
+                        <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400">
+                          {t('admin_courses.installment_plan')}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1 text-[10px] text-zinc-400 mt-0.5">
                         <Star size={10} className="text-yellow-400 fill-yellow-400" /> {course.rating.toFixed(1)}
                       </span>
@@ -443,6 +481,77 @@ export default function AdminCoursesPage() {
                       className="w-full px-3.5 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       value={price} onChange={e => setPrice(Number(e.target.value))}
                     />
+                  </div>
+
+                  <div className="col-span-2 border-t border-b border-zinc-800/80 py-4 my-2 space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-brand-400 mb-2">{t('admin_courses.payment_system')}</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <label className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition ${paymentType === 'FULL_PAYMENT' ? 'bg-brand-500/10 border-brand-500 text-white font-bold' : 'bg-zinc-800/50 border-zinc-700 text-zinc-400'}`}>
+                          <input
+                            type="radio" name="paymentType" value="FULL_PAYMENT"
+                            checked={paymentType === 'FULL_PAYMENT'}
+                            onChange={() => setPaymentType('FULL_PAYMENT')}
+                            className="hidden"
+                          />
+                          <span>{t('admin_courses.full_payment')}</span>
+                        </label>
+                        <label className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition ${paymentType === 'INSTALLMENT' ? 'bg-brand-500/10 border-brand-500 text-white font-bold' : 'bg-zinc-800/50 border-zinc-700 text-zinc-400'}`}>
+                          <input
+                            type="radio" name="paymentType" value="INSTALLMENT"
+                            checked={paymentType === 'INSTALLMENT'}
+                            onChange={() => setPaymentType('INSTALLMENT')}
+                            className="hidden"
+                          />
+                          <span>{t('admin_courses.installment_plan')}</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {paymentType === 'INSTALLMENT' && (
+                      <div className="p-4 bg-zinc-850 border border-zinc-700/80 rounded-xl space-y-3">
+                        <p className="text-xs font-semibold text-zinc-300">{t('admin_courses.installment_breakdown')}</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">{t('admin_courses.down_payment')} ({t('common.currency')})</label>
+                            <input
+                              type="number" min="0" required
+                              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                              value={downPayment} onChange={e => setDownPayment(Number(e.target.value))}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">{t('admin_courses.installment_amount')} ({t('common.currency')})</label>
+                            <input
+                              type="number" min="0" required
+                              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                              value={installmentAmount} onChange={e => setInstallmentAmount(Number(e.target.value))}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">{t('admin_courses.frequency')}</label>
+                            <input
+                              type="text" required placeholder="e.g. Monthly"
+                              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                              value={installmentFrequency} onChange={e => setInstallmentFrequency(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">{t('admin_courses.num_installments')}</label>
+                            <input
+                              type="number" min="1" required
+                              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                              value={numberOfInstallments} onChange={e => setNumberOfInstallments(Number(e.target.value))}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-2 border-t border-zinc-700/50 flex justify-between items-center text-xs text-zinc-300">
+                          <span>{t('admin_courses.calculated_total')}</span>
+                          <strong className="text-white font-bold">{downPayment + (installmentAmount * numberOfInstallments)} {t('common.currency')}</strong>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
