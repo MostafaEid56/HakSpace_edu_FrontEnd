@@ -182,7 +182,7 @@ export default function VerifyCertificatePage() {
             </div>
 
             {/* Exact New Certificate Design Stage */}
-            <div className="w-full overflow-x-auto pb-4 flex justify-center print:overflow-visible">
+            <div className="certificate-container w-full overflow-x-auto pb-4 flex justify-center print:overflow-visible">
               <div
                 className="certificate relative w-[1200px] min-w-[1200px] h-[675px] bg-gradient-to-br from-[#161616] via-[#0c0c0c] to-[#050505] text-white overflow-hidden shadow-2xl print:m-0 print:shadow-none"
                 style={{
@@ -286,30 +286,45 @@ export default function VerifyCertificatePage() {
       <style>{`
         @media print {
           @page {
-            size: 1200px 675px landscape;
+            size: A4 landscape;
             margin: 0;
           }
-          body, html, #root {
-            background-color: #0c0c0c !important;
-            color: #ffffff !important;
+          *, *::before, *::after {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             color-adjust: exact !important;
+          }
+          html, body, #root {
+            width: 100% !important;
+            height: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
+            background-color: #050505 !important;
+            overflow: hidden !important;
+          }
+          .print\\:hidden, nav, header, footer, button, form {
+            display: none !important;
+          }
+          .certificate-container {
+            width: 100vw !important;
+            height: 100vh !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #050505 !important;
           }
           .certificate {
+            width: 1200px !important;
+            height: 675px !important;
+            min-width: 1200px !important;
+            transform: scale(0.92) !important;
+            transform-origin: center center !important;
             box-shadow: none !important;
             margin: 0 auto !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
             page-break-inside: avoid !important;
-          }
-          .side-panel {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
+            break-inside: avoid !important;
           }
         }
       `}</style>
