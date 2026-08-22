@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save, Sparkles, Award } from 'lucide-react'
+import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save, Sparkles, Award, Share2, Copy } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import { apiClient } from '../../api/client'
@@ -29,9 +29,9 @@ interface WorkshopSummary {
   title: string
   description: string
   imageUrl: string
-  workshopDate?: string
-  startTime?: string
-  endTime?: string
+  workshopDate: string
+  startTime: string
+  endTime: string
   duration?: string
   instructorName: string
   price: number
@@ -72,37 +72,60 @@ interface DashboardResponse {
 
 export default function ProfilePage() {
   const navigate = useNavigate()
+  const { username: paramUsername } = useParams<{ username?: string }>()
   const { t, i18n } = useTranslation()
   const { user: authUser, token, updateUser } = useAuthStore()
 
   const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'registered' | 'in_progress' | 'completed' | 'available'>('registered')
+  const [notFound, setNotFound] = useState(false)
+  const [activeTab, setActiveTab] = useState<'registered' | 'in_progress' | 'completed' | 'available'>('completed')
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState<Partial<UserProfileData>>({})
   const [saving, setSaving] = useState(false)
 
+  const isSelf = !paramUsername || (authUser?.username && authUser.username.toLowerCase() === paramUsername.toLowerCase())
+
   useEffect(() => {
-    if (!token) {
+    if (!paramUsername && !token) {
       navigate('/login')
       return
     }
     fetchProfile()
-  }, [token])
+  }, [paramUsername, token])
 
   const fetchProfile = async () => {
     setLoading(true)
+    setNotFound(false)
     try {
-      const resp = await apiClient.get<DashboardResponse>('/api/user/profile')
+      const endpoint = paramUsername ? `/api/user/profile/${paramUsername}` : '/api/user/profile'
+      const resp = await apiClient.get<DashboardResponse>(endpoint)
       setDashboardData(resp.data)
       setEditForm(resp.data.profile)
-      updateUser(resp.data.profile)
+      if (isSelf) {
+        updateUser(resp.data.profile)
+        setActiveTab('registered')
+      } else {
+        setActiveTab('completed')
+      }
     } catch (err: any) {
       console.error(err)
-      toast.error(t('courses.error'))
+      if (err?.response?.status === 404) {
+        setNotFound(true)
+      } else {
+        toast.error(t('courses.error'))
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleCopyShareLink = () => {
+    const username = dashboardData?.profile?.username || authUser?.username
+    if (!username) return
+    const publicUrl = `${window.location.origin}/profile/${username}`
+    navigator.clipboard.writeText(publicUrl)
+    toast.success(t('profile.link_copied', 'Profile link copied to clipboard!'))
   }
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -127,6 +150,21 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-black text-white pt-28 flex justify-center">
         <Navbar />
         <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen bg-black text-white pt-28 px-4 text-center">
+        <Navbar />
+        <div className="max-w-md mx-auto py-16 space-y-4">
+          <h2 className="text-3xl font-extrabold text-white">404</h2>
+          <p className="text-zinc-400">User profile not found.</p>
+          <Link to="/" className="inline-block px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl">
+            Back to Home
+          </Link>
+        </div>
       </div>
     )
   }
@@ -160,26 +198,40 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                <p className="text-zinc-400 text-sm font-medium">@{profile?.username} • {profile?.email}</p>
+                <p className="text-zinc-400 text-sm font-medium">@{profile?.username} {isSelf && profile?.email ? `• ${profile.email}` : ''}</p>
 
-                <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 pt-1">
-                  <span className="flex items-center gap-1.5"><Phone size={14} className="text-brand-500" /> {profile?.phone}</span>
-                  {profile?.whatsapp && (
-                    <a href={`https://wa.me/${profile.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-green-400 hover:underline">
-                      WhatsApp: {profile.whatsapp}
-                    </a>
-                  )}
-                </div>
+                {isSelf && (
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 pt-1">
+                    <span className="flex items-center gap-1.5"><Phone size={14} className="text-brand-500" /> {profile?.phone}</span>
+                    {profile?.whatsapp && (
+                      <a href={`https://wa.me/${profile.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-green-400 hover:underline">
+                        WhatsApp: {profile.whatsapp}
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-sm font-bold text-white transition flex items-center gap-2 self-start"
-            >
-              {isEditing ? <X size={16} /> : <Edit3 size={16} />}
-              {isEditing ? t('cancel') : t('profile.edit_profile')}
-            </button>
+            <div className="flex items-center gap-2 self-start">
+              <button
+                onClick={handleCopyShareLink}
+                className="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 rounded-xl text-sm font-bold text-white transition flex items-center gap-2 shadow-lg shadow-brand-900/20"
+                title="Share Profile"
+              >
+                <Share2 size={16} /> Share Profile
+              </button>
+
+              {isSelf && (
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-sm font-bold text-white transition flex items-center gap-2"
+                >
+                  {isEditing ? <X size={16} /> : <Edit3 size={16} />}
+                  {isEditing ? t('cancel') : t('profile.edit_profile')}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Bio & Resume Links */}
@@ -316,14 +368,16 @@ export default function ProfilePage() {
             </h2>
 
             <div className="flex flex-wrap gap-2 bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-800">
-              <button
-                onClick={() => setActiveTab('registered')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                  activeTab === 'registered' ? 'bg-brand-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Clock size={14} /> Registered Courses ({dashboardData?.registeredCourses?.length || 0})
-              </button>
+              {isSelf && (
+                <button
+                  onClick={() => setActiveTab('registered')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    activeTab === 'registered' ? 'bg-brand-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Clock size={14} /> Registered Courses ({dashboardData?.registeredCourses?.length || 0})
+                </button>
+              )}
 
               <button
                 onClick={() => setActiveTab('in_progress')}
@@ -355,7 +409,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Tab Content Display */}
-          {activeTab === 'registered' && (
+          {isSelf && activeTab === 'registered' && (
             <RenderCourseGrid
               courses={dashboardData?.registeredCourses || []}
               emptyMessage="No pending registered courses."
