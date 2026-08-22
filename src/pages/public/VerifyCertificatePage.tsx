@@ -205,8 +205,14 @@ export default function VerifyCertificatePage() {
                 </div>
 
                 {/* Logo Box */}
-                <div className="logo-box absolute top-[38px] left-[38px] w-[230px] h-[190px] z-30 flex flex-col items-center justify-center p-2">
-                  <img src={logoImg} alt="HakSpace" className="w-auto h-36 object-contain rounded-xl" />
+                <div className="logo-box absolute top-[30px] left-[38px] w-[230px] h-[210px] z-30 flex flex-col items-center justify-center p-2 text-center">
+                  <img src={logoImg} alt="HakSpace" className="w-auto h-28 object-contain rounded-xl mb-2" />
+                  <div className="text-[16px] font-black tracking-[2px] text-white uppercase leading-tight" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
+                    HAK SPACE
+                  </div>
+                  <div className="text-[11px] font-bold tracking-[4px] text-[#e12525] uppercase mt-0.5">
+                    COMMUNITY
+                  </div>
                 </div>
 
                 {/* Certificate ID Box */}
