@@ -56,6 +56,7 @@ export default function AdminWorkshopsPage() {
   const [instructorName, setInstructorName] = useState('')
   const [price, setPrice] = useState(0)
   const [maxCapacity, setMaxCapacity] = useState(30)
+  const [materialsLink, setMaterialsLink] = useState('')
   const [status, setStatus] = useState('ACTIVE')
   const [saving, setSaving] = useState(false)
 
@@ -80,6 +81,7 @@ export default function AdminWorkshopsPage() {
     setTitle('')
     setDescription('')
     setImageUrl('')
+    setMaterialsLink('')
     setWorkshopDate('')
     setStartTime('')
     setEndTime('')
@@ -96,6 +98,7 @@ export default function AdminWorkshopsPage() {
     setTitle(w.title)
     setDescription(w.description || '')
     setImageUrl(w.imageUrl || '')
+    setMaterialsLink(w.materialsLink || '')
     setWorkshopDate(w.workshopDate || '')
     setStartTime(w.startTime || '')
     setEndTime(w.endTime || '')
@@ -109,9 +112,14 @@ export default function AdminWorkshopsPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (materialsLink && !/^https?:\/\/.+/.test(materialsLink)) {
+      toast.error(t('admin_courses.validation_materials_url', 'Please enter a valid URL (must start with http:// or https://).'))
+      return
+    }
+
     setSaving(true)
     const payload = {
-      title, description, imageUrl, workshopDate, startTime, endTime, duration, instructorName, price, maxCapacity, status
+      title, description, imageUrl, materialsLink, workshopDate, startTime, endTime, duration, instructorName, price, maxCapacity, status
     }
 
     try {
@@ -304,6 +312,22 @@ export default function AdminWorkshopsPage() {
                     className="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-sm"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-zinc-400 mb-1">
+                  Workshop Material Link (Google Drive)
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://drive.google.com/drive/folders/..."
+                  value={materialsLink}
+                  onChange={(e) => setMaterialsLink(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-sm"
+                />
+                <p className="text-[11px] text-zinc-500 mt-1">
+                  Link to workshop PDF, presentation slides, exercises, and resources.
+                </p>
               </div>
 
               <div className="grid grid-cols-3 gap-3">

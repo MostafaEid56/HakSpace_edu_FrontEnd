@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { apiClient } from '../../api/client'
 import { toast } from 'react-toastify'
-import { Calendar, Clock, User, ArrowLeft, Send, Sparkles, Armchair, AlertCircle, CheckCircle, Award } from 'lucide-react'
+import { Calendar, Clock, User, ArrowLeft, Send, Sparkles, Armchair, AlertCircle, CheckCircle, Award, ExternalLink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
@@ -206,20 +206,36 @@ export default function WorkshopDetailsPage() {
               </div>
             </div>
 
-            {/* Workshop Schedule Info */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-              <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50">
-                <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.date')}</span>
-                <span className="font-bold text-white">{workshop.workshopDate || 'TBA'}</span>
+            {/* Workshop Schedule Info & Materials */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50">
+                  <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.date')}</span>
+                  <span className="font-bold text-white">{workshop.workshopDate || 'TBA'}</span>
+                </div>
+                <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50">
+                  <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.time')}</span>
+                  <span className="font-bold text-white">{workshop.startTime || '18:00'} {workshop.endTime ? `- ${workshop.endTime}` : ''}</span>
+                </div>
+                <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50 col-span-2 md:col-span-1">
+                  <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.price')}</span>
+                  <span className="font-bold text-brand-400">{workshop.price === 0 ? t('workshops.free') : `${workshop.price} EGP`}</span>
+                </div>
               </div>
-              <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50">
-                <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.time')}</span>
-                <span className="font-bold text-white">{workshop.startTime || '18:00'} {workshop.endTime ? `- ${workshop.endTime}` : ''}</span>
-              </div>
-              <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50 col-span-2 md:col-span-1">
-                <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.price')}</span>
-                <span className="font-bold text-brand-400">{workshop.price === 0 ? t('workshops.free') : `${workshop.price} EGP`}</span>
-              </div>
+
+              {workshop.materialsLink && (
+                <div className="pt-2">
+                  <a
+                    href={workshop.materialsLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-5 py-3 bg-brand-600/20 hover:bg-brand-600/30 border border-brand-500/40 rounded-xl text-xs font-bold text-brand-300 transition flex items-center justify-center gap-2 group"
+                  >
+                    <span>{t('course_details.materials_button', 'Workshop Material')}</span>
+                    <ExternalLink size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
