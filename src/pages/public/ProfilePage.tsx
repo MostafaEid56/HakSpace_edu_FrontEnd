@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save, Sparkles } from 'lucide-react'
+import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save, Sparkles, Award } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import { apiClient } from '../../api/client'
@@ -59,6 +59,7 @@ interface UserProfileData {
 
 interface DashboardResponse {
   profile: UserProfileData
+  registeredCourses?: CourseSummary[]
   inProgressCourses: CourseSummary[]
   upcomingCourses: CourseSummary[]
   completedCourses: CourseSummary[]
@@ -76,7 +77,7 @@ export default function ProfilePage() {
 
   const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'in_progress' | 'upcoming' | 'completed' | 'available'>('in_progress')
+  const [activeTab, setActiveTab] = useState<'registered' | 'in_progress' | 'completed' | 'available'>('registered')
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState<Partial<UserProfileData>>({})
   const [saving, setSaving] = useState(false)
@@ -316,21 +317,21 @@ export default function ProfilePage() {
 
             <div className="flex flex-wrap gap-2 bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-800">
               <button
+                onClick={() => setActiveTab('registered')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                  activeTab === 'registered' ? 'bg-brand-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                <Clock size={14} /> Registered Courses ({dashboardData?.registeredCourses?.length || 0})
+              </button>
+
+              <button
                 onClick={() => setActiveTab('in_progress')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                   activeTab === 'in_progress' ? 'bg-brand-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                <PlayCircle size={14} /> {t('profile.tab_in_progress')} ({dashboardData?.inProgressCourses.length || 0})
-              </button>
-
-              <button
-                onClick={() => setActiveTab('upcoming')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                  activeTab === 'upcoming' ? 'bg-brand-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Clock size={14} /> {t('profile.tab_upcoming')} ({dashboardData?.upcomingCourses.length || 0})
+                <PlayCircle size={14} /> Current Courses ({(dashboardData?.inProgressCourses?.length || 0) + (dashboardData?.upcomingCourses?.length || 0)})
               </button>
 
               <button
@@ -339,7 +340,7 @@ export default function ProfilePage() {
                   activeTab === 'completed' ? 'bg-brand-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                <CheckCircle size={14} /> {t('profile.tab_completed')} ({dashboardData?.completedCourses.length || 0})
+                <CheckCircle size={14} /> {t('profile.tab_completed')} ({dashboardData?.completedCourses?.length || 0})
               </button>
 
               <button
@@ -348,27 +349,27 @@ export default function ProfilePage() {
                   activeTab === 'available' ? 'bg-brand-600 text-white shadow-lg' : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                <BookOpen size={14} /> {t('profile.tab_available')} ({dashboardData?.availableCourses.length || 0})
+                <BookOpen size={14} /> {t('profile.tab_available')} ({dashboardData?.availableCourses?.length || 0})
               </button>
             </div>
           </div>
 
           {/* Tab Content Display */}
-          {activeTab === 'in_progress' && (
+          {activeTab === 'registered' && (
             <RenderCourseGrid
-              courses={dashboardData?.inProgressCourses || []}
-              emptyMessage={t('profile.no_in_progress')}
-              badgeColor="bg-purple-500/10 border-purple-500/30 text-purple-400"
-              statusLabel={t('profile.tab_in_progress')}
+              courses={dashboardData?.registeredCourses || []}
+              emptyMessage="No pending registered courses."
+              badgeColor="bg-amber-500/10 border-amber-500/30 text-amber-400"
+              statusLabel="REGISTERED / PENDING"
             />
           )}
 
-          {activeTab === 'upcoming' && (
+          {activeTab === 'in_progress' && (
             <RenderCourseGrid
-              courses={dashboardData?.upcomingCourses || []}
-              emptyMessage={t('profile.no_upcoming')}
-              badgeColor="bg-amber-500/10 border-amber-500/30 text-amber-400"
-              statusLabel={t('profile.tab_upcoming')}
+              courses={[...(dashboardData?.inProgressCourses || []), ...(dashboardData?.upcomingCourses || [])]}
+              emptyMessage={t('profile.no_in_progress')}
+              badgeColor="bg-purple-500/10 border-purple-500/30 text-purple-400"
+              statusLabel="ENROLLED"
             />
           )}
 
@@ -377,7 +378,7 @@ export default function ProfilePage() {
               courses={dashboardData?.completedCourses || []}
               emptyMessage={t('profile.no_completed')}
               badgeColor="bg-green-500/10 border-green-500/30 text-green-400"
-              statusLabel={t('profile.tab_completed')}
+              statusLabel="COMPLETED"
               showCertificate
             />
           )}
@@ -412,6 +413,53 @@ export default function ProfilePage() {
             ]}
           />
         </div>
+
+        {/* Certificates Section */}
+        {(dashboardData?.completedCourses?.some((c) => c.certificateCode)) && (
+          <div className="space-y-6 pt-6 border-t border-zinc-800">
+            <div className="flex items-center gap-2">
+              <Award size={22} className="text-amber-400" />
+              <h2 className="text-xl font-bold text-white">
+                My Certificates ({dashboardData.completedCourses.filter((c) => c.certificateCode).length})
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {dashboardData.completedCourses
+                .filter((c) => c.certificateCode)
+                .map((course) => (
+                  <Link
+                    key={course.certificateCode}
+                    to={`/verify-certificate?id=${course.certificateCode}`}
+                    className="group bg-zinc-900 border border-zinc-800 hover:border-amber-500/40 rounded-2xl p-5 flex items-center gap-4 transition-all duration-200 shadow-lg hover:shadow-amber-900/20 hover:shadow-xl"
+                  >
+                    {/* Badge icon */}
+                    <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Award size={28} className="text-amber-400" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-bold text-sm leading-tight line-clamp-2 group-hover:text-amber-300 transition-colors">
+                        {course.title}
+                      </p>
+                      <p className="text-[11px] text-zinc-500 mt-1 font-mono truncate">
+                        {course.certificateCode}
+                      </p>
+                      {course.completionDate && (
+                        <p className="text-[10px] text-zinc-600 mt-0.5">
+                          Completed: {course.completionDate}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex-shrink-0 text-zinc-600 group-hover:text-amber-400 transition-colors">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -473,7 +521,7 @@ function RenderCourseGrid({
               {showCertificate && course.certificateCode && (
                 <div className="text-xs text-green-400 font-semibold bg-green-500/10 border border-green-500/20 px-3 py-1.5 rounded-lg flex items-center justify-between">
                   <span>Code: {course.certificateCode}</span>
-                  <Link to={`/verify-certificate?code=${course.certificateCode}`} className="underline text-white hover:text-green-300">
+                  <Link to={`/verify-certificate?id=${course.certificateCode}`} className="underline text-white hover:text-green-300">
                     Verify
                   </Link>
                 </div>

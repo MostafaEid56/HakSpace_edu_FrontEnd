@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { apiClient } from '../../api/client'
 import { toast } from 'react-toastify'
-import { Calendar, Clock, User, ArrowLeft, Send, Sparkles, Armchair, AlertCircle, CheckCircle } from 'lucide-react'
+import { Calendar, Clock, User, ArrowLeft, Send, Sparkles, Armchair, AlertCircle, CheckCircle, Award } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
@@ -57,6 +57,23 @@ export default function WorkshopDetailsPage() {
     enabled: !!id,
   })
 
+  // ── Duplicate-registration check ──────────────────────────────────────────
+  const { data: myWorkshops } = useQuery<any[]>({
+    queryKey: ['myWorkshopRegistrations'],
+    queryFn: async () => {
+      const res = await apiClient.get('/api/user/profile')
+      const all = [
+        ...(res.data.upcomingWorkshops || []),
+        ...(res.data.inProgressWorkshops || []),
+        ...(res.data.completedWorkshops || []),
+      ]
+      return all
+    },
+    enabled: !!user,
+  })
+
+  const alreadyRegistered = myWorkshops?.some((w: any) => String(w.id) === String(id)) ?? false
+
   const mutation = useMutation({
     mutationFn: submitWorkshopRegistration,
     onSuccess: () => {
@@ -64,7 +81,12 @@ export default function WorkshopDetailsPage() {
       toast.success(t('added_success', 'Registered successfully for the workshop!'))
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to submit workshop registration.')
+      const msg = err.response?.data?.message || ''
+      if (msg.includes('duplicate') || msg.includes('already')) {
+        toast.error('You have already registered for this workshop.')
+      } else {
+        toast.error(msg || 'Failed to submit workshop registration.')
+      }
     },
   })
 
@@ -72,6 +94,11 @@ export default function WorkshopDetailsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (alreadyRegistered) {
+      toast.error('You have already registered for this workshop.')
+      return
+    }
 
     if (!isAvailableForRegistration) {
       toast.error('Registration is currently closed for this workshop.')
@@ -205,7 +232,18 @@ export default function WorkshopDetailsPage() {
 
         {/* Registration Form / Success Banner */}
         <div className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl">
-          {success ? (
+          {alreadyRegistered ? (
+            <div className="text-center py-10 space-y-4">
+              <CheckCircle size={56} className="text-emerald-400 mx-auto" />
+              <h2 className="text-2xl font-extrabold text-white">You're Already Registered!</h2>
+              <p className="text-zinc-400 text-sm max-w-md mx-auto">
+                You have already submitted a registration for <strong>{workshop.title}</strong>. Our team will contact you to confirm your seat.
+              </p>
+              <button onClick={() => navigate('/profile')} className="px-6 py-3 bg-brand-600 hover:bg-brand-500 rounded-xl font-bold text-sm">
+                View My Profile
+              </button>
+            </div>
+          ) : success ? (
             <div className="text-center py-10 space-y-4">
               <CheckCircle size={56} className="text-emerald-400 mx-auto" />
               <h2 className="text-2xl font-extrabold text-white">Registration Request Received!</h2>
