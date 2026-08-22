@@ -4,6 +4,7 @@ import { apiClient } from '../../api/client'
 import { toast } from 'react-toastify'
 import { Award, CheckCircle, Search, ArrowLeft, Printer, ShieldCheck, ShieldAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatDuration } from '../../utils/duration'
 import Navbar from '../../components/Navbar'
 import logoImg from '../../assets/Logo.jpg'
 
@@ -247,15 +248,22 @@ export default function VerifyCertificatePage() {
                     For successfully completing the course{' '}
                     <span className="course-name text-white font-bold">{certificate.courseName}</span>
                   </div>
-                  {certificate.startDate && certificate.issueDate ? (
-                    <div className="text-[16px] text-[#b0b0b0] mt-1">
-                      From {new Date(certificate.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} To {new Date(certificate.issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </div>
-                  ) : certificate.courseDuration ? (
-                    <div className="text-[16px] text-[#b0b0b0] mt-1">
-                      Duration: {certificate.courseDuration}
-                    </div>
-                  ) : null}
+                  {(() => {
+                    let displayDuration = certificate.courseDuration ? formatDuration(certificate.courseDuration, 'en') : ''
+                    if (!displayDuration && certificate.startDate && certificate.issueDate) {
+                      const start = new Date(certificate.startDate)
+                      const end = new Date(certificate.issueDate)
+                      const diffTime = Math.abs(end.getTime() - start.getTime())
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                      const months = Math.max(1, Math.round(diffDays / 30))
+                      displayDuration = months === 1 ? '1 Month' : `${months} Months`
+                    }
+                    return displayDuration ? (
+                      <div className="text-[16px] text-[#b0b0b0] mt-1">
+                        Duration: {displayDuration}
+                      </div>
+                    ) : null
+                  })()}
                 </div>
 
                 {/* Signature Block */}

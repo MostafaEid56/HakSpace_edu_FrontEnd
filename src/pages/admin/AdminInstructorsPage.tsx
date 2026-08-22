@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { apiClient } from '../../api/client'
 import { toast } from 'react-toastify'
 import { GraduationCap, Plus, Edit2, Trash2, X, Linkedin, Github, Globe, ExternalLink } from 'lucide-react'
