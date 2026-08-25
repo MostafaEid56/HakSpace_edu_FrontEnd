@@ -170,6 +170,23 @@ export default function CourseDetailsPage() {
     enabled: !!id,
   })
 
+  // ── Duplicate-registration check ──────────────────────────────────────────
+  const { data: myCourses } = useQuery<any[]>({
+    queryKey: ['myCourseEnrollments'],
+    queryFn: async () => {
+      const res = await apiClient.get('/api/user/profile')
+      const all = [
+        ...(res.data.registeredCourses || []),
+        ...(res.data.inProgressCourses || []),
+        ...(res.data.completedCourses || []),
+      ]
+      return all
+    },
+    enabled: !!user,
+  })
+
+  const alreadyRegistered = myCourses?.some((c: any) => String(c.id) === String(id)) ?? false
+
   const mutation = useMutation({
     mutationFn: submitEnrollment,
     onSuccess: () => {
@@ -177,12 +194,25 @@ export default function CourseDetailsPage() {
       toast.success('Your enrollment request has been submitted!')
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to submit enrollment request. Please try again.')
+      const msg = err.response?.data?.message || ''
+      if (msg.includes('duplicate_phone')) {
+        toast.error('This phone number is already registered for this course.')
+      } else if (msg.includes('duplicate') || msg.includes('already')) {
+        toast.error('You are already registered for this course.')
+      } else {
+        toast.error(msg || 'Failed to submit enrollment request. Please try again.')
+      }
     },
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (alreadyRegistered) {
+      toast.error('You are already registered for this course.')
+      return
+    }
+
     if (!fullName || !phone || !email || !city) {
       toast.error('Please fill in all required fields.')
       return
@@ -457,6 +487,19 @@ export default function CourseDetailsPage() {
                   <p className="text-zinc-400 text-sm leading-relaxed">
                     {t(`course_details.status_banner_${course.status}`)}
                   </p>
+                </div>
+              ) : alreadyRegistered ? (
+                <div className="text-center py-8 space-y-4">
+                  <div className="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto">
+                    <Check size={32} />
+                  </div>
+                  <h3 className="text-xl font-bold">You're Already Registered!</h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">
+                    You have already submitted a registration for this course. Our team will contact you to confirm your seat.
+                  </p>
+                  <button onClick={() => navigate('/profile')} className="w-full bg-brand-600 hover:bg-brand-500 active:scale-95 text-white py-3 rounded-xl font-bold transition shadow-lg text-sm">
+                    View My Profile
+                  </button>
                 </div>
               ) : success ? (
                 <div className="text-center py-8 space-y-4">
