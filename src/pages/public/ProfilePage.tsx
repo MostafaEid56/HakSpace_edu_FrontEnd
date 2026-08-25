@@ -139,7 +139,12 @@ export default function ProfilePage() {
       setIsEditing(false)
     } catch (err: any) {
       console.error(err)
-      toast.error(t('error_update', 'Failed to update profile'))
+      const msg = err.response?.data?.message || ''
+      if (msg.includes('user.email.duplicate')) {
+        toast.error('This email is already in use.')
+      } else {
+        toast.error(t('error_update', 'Failed to update profile'))
+      }
     } finally {
       setSaving(false)
     }
@@ -289,6 +294,17 @@ export default function ProfilePage() {
                   type="text"
                   value={editForm.fullName || ''}
                   onChange={(e) => setEditForm({ ...editForm, fullName: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase text-zinc-400 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={editForm.email || ''}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                   className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm"
                 />
               </div>
