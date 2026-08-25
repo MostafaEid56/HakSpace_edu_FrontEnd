@@ -244,10 +244,6 @@ export default function VerifyCertificatePage() {
 
                 {/* Course Name & Duration */}
                 <div className="course-line absolute top-[415px] left-[335px] right-[60px] text-[19px] text-[#cfcfcf] z-30 leading-[1.5] text-left">
-                  <div>
-                    For successfully completing the course{' '}
-                    <span className="course-name text-white font-bold">{certificate.courseName}</span>
-                  </div>
                   {(() => {
                     let displayDuration = certificate.courseDuration ? formatDuration(certificate.courseDuration, 'en') : ''
                     if (!displayDuration && certificate.startDate && certificate.issueDate) {
@@ -256,20 +252,22 @@ export default function VerifyCertificatePage() {
                       const diffTime = Math.abs(end.getTime() - start.getTime())
                       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
                       const months = Math.max(1, Math.round(diffDays / 30))
-                      displayDuration = months === 1 ? '1 Month' : `${months} Months`
+                      displayDuration = months === 1 ? '1 month' : `${months} months`
                     }
-                    return displayDuration ? (
-                      <div className="text-[16px] text-[#b0b0b0] mt-1">
-                        Duration: {displayDuration}
+                    if (!displayDuration) displayDuration = '3 months'
+
+                    return (
+                      <div>
+                        For Successfully completing the <span className="course-name text-white font-bold">{certificate.courseName}</span> course with a total training duration of <span className="duration text-white font-bold">{displayDuration}</span>.
                       </div>
-                    ) : null
+                    )
                   })()}
                 </div>
 
                 {/* Signature Block */}
                 <div className="signature-block absolute bottom-[40px] left-[38px] w-[280px] z-30 text-left">
-                  <div className="label text-[15px] font-extrabold mb-[6px] text-white">Ceo's Signature</div>
-                  <div className="sig text-[34px] text-[#f2f2f2] border-b border-white/30 pb-[6px] min-h-[40px]" style={{ fontFamily: "'Brush Script MT', 'Segoe Script', cursive" }}>
+                  <div className="label text-[14px] font-extrabold mb-[4px] text-white">Ceo's Signature</div>
+                  <div className="sig text-[24px] text-[#f2f2f2] border-b border-white/30 pb-[4px] min-h-[32px]" style={{ fontFamily: "'Brush Script MT', 'Segoe Script', cursive" }}>
                     Ahmed Bin Omara
                   </div>
                 </div>
