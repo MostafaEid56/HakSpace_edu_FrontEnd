@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { apiClient } from '../../api/client'
 import { toast } from 'react-toastify'
-import { GraduationCap, Plus, Edit2, Trash2, X, Linkedin, Github, Globe, ExternalLink } from 'lucide-react'
+import { GraduationCap, Plus, Edit2, Trash2, X, Linkedin, Github, Globe, ExternalLink, Camera, Upload } from 'lucide-react'
 import { GENERAL_FIELDS, SPECIALIZATION_HIERARCHY } from '../../constants/specializations'
 
 interface InstructorProfile {
@@ -57,6 +57,10 @@ export default function AdminInstructorsPage() {
   const [twitterUrl, setTwitterUrl] = useState('')
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [saving, setSaving] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetchInstructors()
@@ -106,7 +110,55 @@ export default function AdminInstructorsPage() {
     setFacebookUrl(instructor.facebookUrl || '')
     setTwitterUrl(instructor.twitterUrl || '')
     setWebsiteUrl(instructor.websiteUrl || '')
+    setImageFile(null)
+    setImagePreview(null)
     setIsModalOpen(true)
+  }
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowed.includes(file.type)) {
+      toast.error('Only JPG, PNG, or WEBP images are allowed.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be smaller than 5 MB.')
+      return
+    }
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
+
+  const handleUploadImage = async () => {
+    if (!imageFile || !editingInstructor) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', imageFile)
+      const res = await apiClient.post<InstructorProfile>(
+        `/api/admin/instructors/${editingInstructor.userId}/profile-image`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      )
+      setProfileImageUrl(res.data.profileImageUrl || '')
+      setImageFile(null)
+      setImagePreview(null)
+      toast.success('Profile image uploaded successfully!')
+      fetchInstructors()
+    } catch (err: any) {
+      const msg = err.response?.data?.message || ''
+      if (msg.includes('image.too_large')) {
+        toast.error('Image is too large. Maximum 5 MB allowed.')
+      } else if (msg.includes('image.invalid_format')) {
+        toast.error('Invalid image format. Use JPG, PNG, or WEBP.')
+      } else {
+        toast.error('Failed to upload image. Please try again.')
+      }
+    } finally {
+      setUploading(false)
+    }
   }
 
   const getCombinedSpecialization = () => {
@@ -175,6 +227,7 @@ export default function AdminInstructorsPage() {
     setYearsExperience(0); setProfileImageUrl(''); setLinkedinUrl('')
     setGithubUrl(''); setFacebookUrl(''); setTwitterUrl(''); setWebsiteUrl('')
     setSelectedUserId('')
+    setImageFile(null); setImagePreview(null)
   }
 
   const nonInstructorUsers = users.filter(u => !instructors.some(i => i.userId === u.id))
@@ -339,6 +392,57 @@ export default function AdminInstructorsPage() {
               <h2 className="text-xl font-bold text-white">Edit Instructor: {editingInstructor.fullName}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-zinc-400 hover:text-white"><X size={20} /></button>
             </div>
+
+            {/* ── Profile Image Upload ── */}
+            <div className="mb-6 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
+              <p className="text-xs font-semibold text-zinc-400 uppercase mb-3 flex items-center gap-1.5">
+                <Camera size={13} /> Profile Image
+              </p>
+              <div className="flex items-center gap-4">
+                {/* Preview / current */}
+                <div className="flex-shrink-0">
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="preview" className="w-20 h-20 rounded-2xl object-cover border-2 border-brand-500/50" />
+                  ) : profileImageUrl ? (
+                    <img src={profileImageUrl} alt="current" className="w-20 h-20 rounded-2xl object-cover border-2 border-zinc-700" />
+                  ) : (
+                    <div className="w-20 h-20 rounded-2xl bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-zinc-500">
+                      <Camera size={24} />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageFileChange}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-xs font-semibold text-zinc-300 transition flex items-center justify-center gap-1.5"
+                  >
+                    <Camera size={13} /> {imageFile ? 'Change Image' : 'Select Image'}
+                  </button>
+                  {imageFile && (
+                    <button
+                      type="button"
+                      onClick={handleUploadImage}
+                      disabled={uploading}
+                      className="w-full px-3 py-2 bg-brand-600 hover:bg-brand-500 disabled:opacity-50 rounded-xl text-xs font-bold text-white transition flex items-center justify-center gap-1.5"
+                    >
+                      {uploading
+                        ? <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> Uploading...</>
+                        : <><Upload size={13} /> Upload Image</>}
+                    </button>
+                  )}
+                  <p className="text-[10px] text-zinc-500">JPG, PNG, or WEBP • Max 5 MB</p>
+                </div>
+              </div>
+            </div>
+
             <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
               <ProfileFields
                 jobTitle={jobTitle} setJobTitle={setJobTitle}
