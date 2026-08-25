@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save, Sparkles, Award, Share2, Copy } from 'lucide-react'
+import { User, Mail, Phone, Briefcase, FileText, Globe, ExternalLink, BookOpen, CheckCircle, Clock, PlayCircle, Edit3, X, Save, Sparkles, Award, Share2, Copy, Lock } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import { useAuthStore } from '../../store/authStore'
 import { apiClient } from '../../api/client'
@@ -198,16 +198,29 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                <p className="text-zinc-400 text-sm font-medium">@{profile?.username} {isSelf && profile?.email ? `• ${profile.email}` : ''}</p>
+                <p className="text-zinc-400 text-sm font-medium">@{profile?.username}</p>
 
                 {isSelf && (
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 pt-1">
-                    <span className="flex items-center gap-1.5"><Phone size={14} className="text-brand-500" /> {profile?.phone}</span>
-                    {profile?.whatsapp && (
-                      <a href={`https://wa.me/${profile.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-green-400 hover:underline">
-                        WhatsApp: {profile.whatsapp}
-                      </a>
-                    )}
+                  <div className="space-y-2 pt-1">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400">
+                      {profile?.email && (
+                        <span className="flex items-center gap-1.5"><Mail size={14} className="text-brand-500" /> {profile.email}</span>
+                      )}
+                      {profile?.phone && (
+                        <span className="flex items-center gap-1.5"><Phone size={14} className="text-brand-500" /> {profile.phone}</span>
+                      )}
+                      {profile?.whatsapp && (
+                        <a href={`https://wa.me/${profile.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-green-400 hover:underline">
+                          WhatsApp: {profile.whatsapp}
+                        </a>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-xl max-w-xl">
+                      <Lock size={13} className="flex-shrink-0 text-amber-400" />
+                      <span>
+                        <strong>Private Information</strong> — Your phone number, WhatsApp number, and email address are visible only to you and are hidden when your profile is shared.
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
