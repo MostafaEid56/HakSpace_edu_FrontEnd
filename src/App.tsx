@@ -18,6 +18,10 @@ import AdminInstructorsPage from './pages/admin/AdminInstructorsPage'
 import InstructorProfilePage from './pages/public/InstructorProfilePage'
 import WhatsAppButton from './components/WhatsAppButton'
 import AdminLayout from './components/AdminLayout'
+import StorePage from './pages/public/StorePage'
+import ProductDetailsPage from './pages/public/ProductDetailsPage'
+import AdminStorePage from './pages/admin/AdminStorePage'
+import AdminStoreLeadsPage from './pages/admin/AdminStoreLeadsPage'
 
 function App() {
   return (
@@ -34,6 +38,8 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/:username" element={<ProfilePage />} />
         <Route path="/instructors/:username" element={<InstructorProfilePage />} />
+        <Route path="/store" element={<StorePage />} />
+        <Route path="/store/:id" element={<ProductDetailsPage />} />
         <Route path="/admin/dashboard" element={<AdminLayout><DashboardPage /></AdminLayout>} />
         <Route path="/admin/community" element={<AdminLayout><AdminCommunityPage /></AdminLayout>} />
         <Route path="/admin/courses" element={<AdminLayout><AdminCoursesPage /></AdminLayout>} />
@@ -41,6 +47,8 @@ function App() {
         <Route path="/admin/instructors" element={<AdminLayout><AdminInstructorsPage /></AdminLayout>} />
         <Route path="/admin/leads" element={<AdminLayout><LeadsPage /></AdminLayout>} />
         <Route path="/admin/blacklist" element={<AdminLayout><AdminBlacklistPage /></AdminLayout>} />
+        <Route path="/admin/store" element={<AdminLayout><AdminStorePage /></AdminLayout>} />
+        <Route path="/admin/store-leads" element={<AdminLayout><AdminStoreLeadsPage /></AdminLayout>} />
       </Routes>
       <WhatsAppButton />
     </>

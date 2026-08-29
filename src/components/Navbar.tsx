@@ -54,6 +54,13 @@ export default function Navbar() {
           </Link>
 
           <Link
+            to="/store"
+            className="text-sm font-semibold text-zinc-400 hover:text-white transition"
+          >
+            {t('store.title', 'Store')}
+          </Link>
+
+          <Link
             to="/verify-certificate"
             className="text-sm font-semibold text-zinc-400 hover:text-white transition"
           >
@@ -120,6 +127,14 @@ export default function Navbar() {
             className="text-base font-semibold text-zinc-300 hover:text-white transition px-2 py-1"
           >
             {t('nav.workshops')}
+          </Link>
+
+          <Link
+            to="/store"
+            onClick={() => setIsMenuOpen(false)}
+            className="text-base font-semibold text-zinc-300 hover:text-white transition px-2 py-1"
+          >
+            {t('store.title', 'Store')}
           </Link>
 
           <Link
