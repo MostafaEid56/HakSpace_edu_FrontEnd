@@ -208,7 +208,7 @@ export default function WorkshopDetailsPage() {
 
             {/* Workshop Schedule Info & Materials */}
             <div className="space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                 <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50">
                   <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.date')}</span>
                   <span className="font-bold text-white">{workshop.workshopDate || 'TBA'}</span>
@@ -217,7 +217,11 @@ export default function WorkshopDetailsPage() {
                   <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.time')}</span>
                   <span className="font-bold text-white">{workshop.startTime || '18:00'} {workshop.endTime ? `- ${workshop.endTime}` : ''}</span>
                 </div>
-                <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50 col-span-2 md:col-span-1">
+                <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50">
+                  <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.duration', 'Duration')}</span>
+                  <span className="font-bold text-white">{workshop.duration || 'N/A'}</span>
+                </div>
+                <div className="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700/50">
                   <span className="text-[10px] text-zinc-400 font-bold uppercase block">{t('workshops.price')}</span>
                   <span className="font-bold text-brand-400">{workshop.price === 0 ? t('workshops.free') : `${workshop.price} EGP`}</span>
                 </div>

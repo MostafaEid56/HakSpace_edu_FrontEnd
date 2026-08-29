@@ -52,7 +52,7 @@ export default function AdminWorkshopsPage() {
   const [workshopDate, setWorkshopDate] = useState('')
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
-  const [duration, setDuration] = useState('3 Hours')
+  const [duration, setDuration] = useState('')
   const [instructorName, setInstructorName] = useState('')
   const [price, setPrice] = useState(0)
   const [maxCapacity, setMaxCapacity] = useState(30)
@@ -85,7 +85,7 @@ export default function AdminWorkshopsPage() {
     setWorkshopDate('')
     setStartTime('')
     setEndTime('')
-    setDuration('3 Hours')
+    setDuration('')
     setInstructorName('')
     setPrice(0)
     setMaxCapacity(30)
@@ -102,7 +102,7 @@ export default function AdminWorkshopsPage() {
     setWorkshopDate(w.workshopDate || '')
     setStartTime(w.startTime || '')
     setEndTime(w.endTime || '')
-    setDuration(w.duration || '3 Hours')
+    setDuration(w.duration || '')
     setInstructorName(w.instructorName || '')
     setPrice(w.price || 0)
     setMaxCapacity(w.maxCapacity || 30)
@@ -330,7 +330,7 @@ export default function AdminWorkshopsPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-400 mb-1">Date</label>
                   <input
@@ -357,6 +357,16 @@ export default function AdminWorkshopsPage() {
                     placeholder="21:00"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-400 mb-1">Duration</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 2 hours"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
                     className="w-full px-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs"
                   />
                 </div>

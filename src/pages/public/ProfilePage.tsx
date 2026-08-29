@@ -659,7 +659,7 @@ function RenderWorkshopGrid({ workshops }: { workshops: WorkshopSummary[] }) {
           </div>
 
           <div className="p-4 pt-0 flex justify-between items-center text-xs">
-            <span className="text-zinc-500 text-[11px]">{w.duration || '3 Hours'}</span>
+            <span className="text-zinc-500 text-[11px]">{w.duration || ''}</span>
             <Link to={`/workshops/${w.id}`} className="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl">
               View Details
             </Link>

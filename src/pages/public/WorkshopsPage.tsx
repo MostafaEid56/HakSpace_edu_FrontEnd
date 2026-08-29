@@ -229,9 +229,11 @@ export default function WorkshopsPage() {
                       <StatusBadge status={workshop.status} />
                     </div>
                     <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-xs font-semibold text-zinc-300">
-                      <span className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <Clock size={12} className="text-brand-500" /> {workshop.duration || '3 Hours'}
-                      </span>
+                      {workshop.duration && (
+                        <span className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1">
+                          <Clock size={12} className="text-brand-500" /> {workshop.duration}
+                        </span>
+                      )}
                       <span className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1">
                         <User size={12} className="text-brand-400" /> {workshop.instructorName}
                       </span>
