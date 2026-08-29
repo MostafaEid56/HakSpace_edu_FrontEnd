@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Eye, EyeOff, User, Briefcase, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, User, Briefcase, ArrowRight, Key } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import { apiClient } from '../../api/client'
 import { useAuthStore } from '../../store/authStore'
@@ -27,6 +27,7 @@ export default function RegisterPage() {
     bio: '',
     cvUrl: '',
     portfolioUrl: '',
+    invitationCode: '',
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -57,8 +58,8 @@ export default function RegisterPage() {
       return
     }
 
-    if (!formData.fullName || !formData.username || !formData.email || !formData.password || !formData.generalSpecialization || !formData.specificSpecialization || !formData.phone || !formData.bio) {
-      toast.error(t('blacklist.validation_required', 'Please fill in all required fields'))
+    if (!formData.fullName || !formData.username || !formData.email || !formData.password || !formData.generalSpecialization || !formData.specificSpecialization || !formData.phone || !formData.bio || !formData.invitationCode) {
+      toast.error(t('invitation_code.required', 'Invitation code is required.'))
       return
     }
 
@@ -93,6 +94,7 @@ export default function RegisterPage() {
         bio: formData.bio,
         cvUrl: formData.cvUrl || null,
         portfolioUrl: formData.portfolioUrl || null,
+        invitationCode: formData.invitationCode.trim(),
       })
 
       toast.success(t('register.success', 'Registration successful!'))
@@ -109,7 +111,12 @@ export default function RegisterPage() {
       navigate('/profile')
     } catch (err: any) {
       console.error(err)
-      const message = err.response?.data?.message || err.message || t('blacklist.error_add', 'Registration failed')
+      let message = err.response?.data?.message || err.message || t('blacklist.error_add', 'Registration failed')
+      if (message === 'invitation_code.invalid') {
+        message = t('invitation_code.invalid', 'Invalid or expired invitation code.')
+      } else if (message === 'invitation_code.required') {
+        message = t('invitation_code.required', 'Invitation code is required.')
+      }
       toast.error(message)
     } finally {
       setLoading(false)
@@ -359,6 +366,31 @@ export default function RegisterPage() {
                   className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Section 3: Invitation Code */}
+          <div>
+            <h2 className="text-lg font-bold text-brand-400 mb-4 pb-2 border-b border-zinc-800 flex items-center gap-2">
+              <Key size={20} /> {t('invitation_code.title')}
+            </h2>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                {t('invitation_code.label')} *
+              </label>
+              <input
+                type="text"
+                name="invitationCode"
+                required
+                value={formData.invitationCode}
+                onChange={handleChange}
+                placeholder={t('invitation_code.placeholder')}
+                className="w-full px-4 py-3 bg-zinc-800/80 border border-zinc-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm font-mono tracking-wider uppercase"
+              />
+              <p className="text-xs text-zinc-500 mt-2">
+                {t('invitation_code.instructions')}
+              </p>
             </div>
           </div>
 

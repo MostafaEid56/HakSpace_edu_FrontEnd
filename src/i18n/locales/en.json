@@ -527,5 +527,21 @@
     "purchase_success": "Purchase request submitted successfully!",
     "out_of_stock_error": "Sorry, this product just went out of stock.",
     "purchase_error": "Failed to submit purchase request."
+  },
+  "invitation_code": {
+    "title": "Community Invitation Code",
+    "subtitle": "Manage active invitation codes for community registration.",
+    "label": "Invitation Code",
+    "placeholder": "Enter invitation code (e.g. HAK-7X4K9P)",
+    "required": "Invitation code is required.",
+    "invalid": "Invalid or expired invitation code.",
+    "instructions": "Enter the invitation code provided by the Community administrator.",
+    "current_code": "Current Invitation Code",
+    "status": "Status",
+    "active": "Active",
+    "expired": "Expired",
+    "generate_btn": "Generate New Code",
+    "confirm_generate": "Generating a new invitation code will immediately invalidate the current code. Do you want to continue?",
+    "generated_success": "New invitation code generated successfully!"
   }
 }

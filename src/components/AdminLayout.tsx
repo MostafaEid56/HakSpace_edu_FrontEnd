@@ -1,6 +1,6 @@
 import { Navigate, useLocation, Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
-import { LayoutDashboard, Users, LogOut, BookOpen, ShieldOff, Sparkles, GraduationCap, Store, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, Users, LogOut, BookOpen, ShieldOff, Sparkles, GraduationCap, Store, ShoppingBag, Key } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import logoImg from '../assets/FinalLogo.png'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -27,6 +27,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { label: t('admin.overview'), path: '/admin/dashboard', icon: LayoutDashboard },
     { label: t('admin_community.title'), path: '/admin/community', icon: Users },
+    { label: t('invitation_code.title', 'Invitation Code'), path: '/admin/invitation-code', icon: Key },
     { label: 'Instructors', path: '/admin/instructors', icon: GraduationCap },
     { label: t('admin.courses_management'), path: '/admin/courses', icon: BookOpen },
     { label: t('admin_workshops.title'), path: '/admin/workshops', icon: Sparkles },

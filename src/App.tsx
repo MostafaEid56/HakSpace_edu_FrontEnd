@@ -22,6 +22,7 @@ import StorePage from './pages/public/StorePage'
 import ProductDetailsPage from './pages/public/ProductDetailsPage'
 import AdminStorePage from './pages/admin/AdminStorePage'
 import AdminStoreLeadsPage from './pages/admin/AdminStoreLeadsPage'
+import AdminInvitationCodePage from './pages/admin/AdminInvitationCodePage'
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/store/:id" element={<ProductDetailsPage />} />
         <Route path="/admin/dashboard" element={<AdminLayout><DashboardPage /></AdminLayout>} />
         <Route path="/admin/community" element={<AdminLayout><AdminCommunityPage /></AdminLayout>} />
+        <Route path="/admin/invitation-code" element={<AdminLayout><AdminInvitationCodePage /></AdminLayout>} />
         <Route path="/admin/courses" element={<AdminLayout><AdminCoursesPage /></AdminLayout>} />
         <Route path="/admin/workshops" element={<AdminLayout><AdminWorkshopsPage /></AdminLayout>} />
         <Route path="/admin/instructors" element={<AdminLayout><AdminInstructorsPage /></AdminLayout>} />
