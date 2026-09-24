@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Search, Filter, MessageSquare, ExternalLink, FileText, Globe, User, BookOpen, CheckCircle, Clock, ShieldCheck } from 'lucide-react'
+import { Search, Filter, MessageSquare, FileText, Globe, AlertTriangle, Trash2, X } from 'lucide-react'
 import { apiClient } from '../../api/client'
 import { MemberBadge, BadgeLevel } from '../../components/MemberBadge'
 import InstructorBadge from '../../components/InstructorBadge'
@@ -51,6 +51,10 @@ export default function AdminCommunityPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedMember, setSelectedMember] = useState<CommunityMember | null>(null)
 
+  // Remove user confirmation modal state
+  const [removeTarget, setRemoveTarget] = useState<CommunityMember | null>(null)
+  const [removing, setRemoving] = useState(false)
+
   useEffect(() => {
     fetchCommunityMembers()
   }, [selectedSpecialization, searchQuery])
@@ -86,8 +90,100 @@ export default function AdminCommunityPage() {
     }
   }
 
+  const handleRemoveUser = async () => {
+    if (!removeTarget) return
+    setRemoving(true)
+    try {
+      await apiClient.delete(`/api/admin/community/users/${removeTarget.id}`)
+      toast.success(t('admin_community.remove_user_success'))
+      setMembers((prev) => prev.filter((m) => m.id !== removeTarget.id))
+      setRemoveTarget(null)
+    } catch (err: any) {
+      const errMsg = err?.response?.data?.message || t('admin_community.remove_user_error')
+      toast.error(errMsg)
+    } finally {
+      setRemoving(false)
+    }
+  }
+
   return (
     <div className="space-y-8">
+      {/* ── Remove User Confirmation Modal ─────────────────────────────── */}
+      {removeTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => !removing && setRemoveTarget(null)}
+          />
+
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-md bg-zinc-950 border border-red-500/30 rounded-2xl shadow-2xl shadow-red-900/20 p-6 space-y-5">
+            {/* Close button */}
+            <button
+              onClick={() => !removing && setRemoveTarget(null)}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white transition"
+              disabled={removing}
+            >
+              <X size={18} />
+            </button>
+
+            {/* Icon + Title */}
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="text-red-400" size={22} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">{t('admin_community.remove_user_confirm_title')}</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">{t('admin_community.remove_user_confirm_message')}</p>
+              </div>
+            </div>
+
+            {/* User Info Card */}
+            <div className="flex items-center gap-3 p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+              <div className="w-10 h-10 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 font-extrabold flex items-center justify-center text-sm">
+                {removeTarget.fullName?.charAt(0)?.toUpperCase() || '?'}
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-white text-sm truncate">{removeTarget.fullName}</p>
+                <p className="text-xs text-zinc-500 truncate">@{removeTarget.username} · {removeTarget.email}</p>
+              </div>
+            </div>
+
+            {/* Warning */}
+            <div className="flex items-start gap-2 p-3 bg-red-500/5 border border-red-500/20 rounded-xl text-xs text-red-300 leading-relaxed">
+              <AlertTriangle size={14} className="flex-shrink-0 mt-0.5 text-red-400" />
+              <span>{t('admin_community.remove_user_confirm_warning')}</span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-1">
+              <button
+                id="cancel-remove-user-btn"
+                onClick={() => setRemoveTarget(null)}
+                disabled={removing}
+                className="flex-1 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white text-sm font-bold rounded-xl transition disabled:opacity-50"
+              >
+                {t('admin_community.cancel')}
+              </button>
+              <button
+                id="confirm-remove-user-btn"
+                onClick={handleRemoveUser}
+                disabled={removing}
+                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {removing ? (
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Trash2 size={14} />
+                )}
+                {removing ? '...' : t('admin_community.remove_user_btn')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-extrabold text-white tracking-tight">{t('admin_community.title')}</h1>
@@ -280,6 +376,16 @@ export default function AdminCommunityPage() {
                       <Globe size={16} />
                     </a>
                   )}
+
+                  {/* Remove User button */}
+                  <button
+                    id={`remove-user-btn-${member.id}`}
+                    onClick={() => setRemoveTarget(member)}
+                    className="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 rounded-lg transition"
+                    title={t('admin_community.remove_user')}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
 
                 <a
@@ -298,3 +404,4 @@ export default function AdminCommunityPage() {
     </div>
   )
 }
+

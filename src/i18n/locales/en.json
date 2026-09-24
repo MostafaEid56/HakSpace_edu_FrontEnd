@@ -501,7 +501,15 @@
     "view_profile": "View Details",
     "courses_count": "Courses",
     "whatsapp_contact": "Contact on WhatsApp",
-    "no_members": "No community members found matching your criteria."
+    "no_members": "No community members found matching your criteria.",
+    "remove_user": "Remove from Community",
+    "remove_user_confirm_title": "Confirm User Removal",
+    "remove_user_confirm_message": "Are you sure you want to remove this user from the community?",
+    "remove_user_confirm_warning": "The user and all their associated data will be permanently deleted. This action cannot be undone.",
+    "remove_user_btn": "Yes, Remove User",
+    "remove_user_success": "User has been successfully removed from the community.",
+    "remove_user_error": "Failed to remove user.",
+    "cancel": "Cancel"
   },
   "added_success": "Successfully registered for the workshop!",
   "store": {
